@@ -129,8 +129,11 @@ function page({ title, desc, body, slug, up = "" }) {
 function barScale(values) {
   const v = values.filter(x => typeof x === "number" && x > 0).sort((a, b) => a - b);
   if (!v.length) return { cap: 1, max: 1, capped: false };
-  const med = v[Math.floor(v.length / 2)];
-  const normal = v.filter(x => x <= med * 5);          // 중앙값의 5배까지가 "보통"
+  // 이상치 선은 임의의 배수가 아니라 IQR 로 긋는다 (Q3 + 1.5×IQR — 상자수염의 수염 끝).
+  const q = pct => v[Math.min(v.length - 1, Math.floor(v.length * pct))];
+  const q1 = q(0.25), q3 = q(0.75);
+  const fence = q3 + 1.5 * (q3 - q1);
+  const normal = v.filter(x => x <= fence);
   const cap = normal.length ? normal[normal.length - 1] : v[v.length - 1];
   return { cap, max: v[v.length - 1], capped: v[v.length - 1] > cap };
 }
@@ -264,14 +267,11 @@ const VERDICT_LABEL = { answers: "answers", gone: "not found", "wrong-shape": "o
 function censusTable(rows) {
   // 🔴 이상치 하나가 나머지 막대를 전부 1px 로 뭉갠다. 90 퍼센타일을 기준으로 잡고,
   //    그걸 넘는 것은 잘린 채로 표시한다 — 잘렸다는 사실을 숨기지 않는다.
-  const msList = rows.filter(r => r.verdict === "answers").map(r => r.ms || 0).sort((a, b) => a - b);
-  const max = msList[Math.floor(msList.length * 0.9)] || Math.max(...msList, 1);
+  const sc = barScale(rows.filter(r => r.verdict === "answers").map(r => r.ms));
   const order = { answers: 0, gone: 1, "wrong-shape": 2, quota: 3, other: 4 };
   const sorted = [...rows].sort((a, b) => (order[a.verdict] - order[b.verdict]) || (a.ms - b.ms));
   const tr = sorted.map(r => {
     const isAns = r.verdict === "answers";
-    const over = isAns && (r.ms || 0) > max;
-    const w = isAns ? Math.min(100, (r.ms || 0) / max * 100).toFixed(1) + "%" : "0%";
     const v = r.verdict === "answers" ? `<span class="pass">answers</span>`
       : r.verdict === "gone" ? `<span class="fail">not found</span>`
       : `<span class="dim">${esc(VERDICT_LABEL[r.verdict] || r.verdict)}</span>`;
@@ -282,12 +282,12 @@ function censusTable(rows) {
             ? `${r.http} <span class="dim">&rarr; 404</span>`   /* 전수 때 받은 코드 → 단독 재확인 결과 */
             : r.http}</td>`
       + `<td class="ms">${isAns ? `<b>${n(r.ms)}</b><i>ms</i>` : `<span class="dim">—</span>`}</td>`
-      + `<td class="barcell">${isAns ? `<span class="${over ? "over" : ""}" style="--w:${w}"></span>` : ""}</td></tr>`;
+      + (isAns ? barCell(r.ms, sc) : `<td class="barcell"></td>`) + `</tr>`;
   }).join("\n");
   return `<div class="tablewrap"><table>
 <thead><tr><th>Model</th><th>Result</th><th>HTTP (sweep &rarr; solo)</th><th>Latency</th><th class="barhead"></th></tr></thead>
 <tbody>${tr}</tbody></table></div>
-<p class="scalenote">Bars scale to ${n(max)}&thinsp;ms; anything longer is clipped and marked.</p>`;
+<p class="scalenote">Bars scale to ${n(sc.cap)}&thinsp;ms; anything longer is clipped and marked.</p>`;
 }
 
 function censusPage(a) {
