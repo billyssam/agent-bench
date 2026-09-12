@@ -171,6 +171,19 @@ const tasksData = taskFiles.length ? JSON.parse(fs.readFileSync(path.join(DATA, 
 
 
 
+
+// 🔴 긴 프롬프트를 통째로 싣지 않는다. needle 과제는 같은 문장이 220번 반복된
+//    21,796자 더미였고, 그게 페이지에 그대로 박혀 있었다(사람도 못 읽고 검색엔진엔 스팸이다).
+//    앞뒤만 보이고 가운데는 몇 줄을 접었는지 밝힌다 — 숨기는 게 아니라 접는 것이다.
+function promptExcerpt(text, head = 4, tail = 3) {
+  const lines = String(text || "").split("\n");
+  if (lines.length <= head + tail + 2) return esc(text);
+  const hidden = lines.length - head - tail;
+  return esc(lines.slice(0, head).join("\n"))
+    + `\n<span class="dim">     … ${n(hidden)} more lines of the same filler …</span>\n`
+    + esc(lines.slice(-tail).join("\n"));
+}
+
 // ── 키가 다르면 결과가 다르다 ────────────────────────────────────
 // 같은 계정, 같은 엔드포인트, 같은 프롬프트. 다른 것은 어느 프로젝트의 키로 물었느냐뿐이다.
 // 🔴 이 페이지는 두 조사 파일이 모두 있을 때만 나온다. 하나뿐이면 만들지 않는다 —
@@ -385,7 +398,7 @@ Six models is a small sample, so read this as what happened here, not as a law.<
 <span class="k">${esc(slow.model)}</span> took ${n(slow.ms)}ms for the same prompt.</p></div>
 
 <h2>The exact prompt</h2>
-<pre>${esc(TASK_PROMPTS[t.id] || "(see bench/tasks.mjs)")}</pre>
+<pre>${promptExcerpt(TASK_PROMPTS[t.id] || "(see bench/tasks.mjs)")}</pre>
 <p>Pass/fail is decided by code, not by reading the answer. The check for this task is in
 <span class="k">bench/tasks.mjs</span>, and failed responses are stored verbatim so the verdict can be re-read.</p>
 `;
