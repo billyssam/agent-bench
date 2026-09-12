@@ -6,6 +6,7 @@ import path from "node:path";
 
 const DATA = "data", OUT = "dist";
 const SITE = "Agent Bench";
+const SITE_URL = process.env.SITE_URL || "https://billyssam.github.io/agent-bench";
 const TAGLINE = "We give models the same task and publish what it cost them.";
 
 const TASK_PROMPTS = Object.fromEntries(TASK_DEFS.map(t => [t.id, t.prompt]));
@@ -452,3 +453,37 @@ if (allData) {
 const pages = 1 + (tasksData ? tasksData.tasks.length : 0);
 if (allData) console.log(`전수: ${allData.listed}개 중 answers ${allData.tally.answers} · gone ${allData.tally.gone}`);
 console.log(`dist · 페이지 ${pages}장 · 모델 ${rows.length} · 작업 ${tasksData ? tasksData.tasks.length : 0}`);
+
+// ── 사이트맵 + robots ─────────────────────────────────────────────
+// 크롤러에게 "여기 뭐가 있는지" 알려 주는 유일한 파일. 없으면 발견까지 몇 주가 더 걸린다.
+{
+  const htmls = [];
+  const walk = dir => {
+    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, e.name);
+      if (e.isDirectory()) walk(full);
+      else if (e.name === "index.html") {
+        const rel = path.relative(OUT, full).replace(/index\.html$/, "").replace(/\\/g, "/");
+        htmls.push(rel);
+      }
+    }
+  };
+  walk(OUT);
+  const today = new Date().toISOString().slice(0, 10);
+  const urls = htmls.sort().map(rel =>
+    `  <url><loc>${SITE_URL}/${rel}</loc><lastmod>${today}</lastmod></url>`).join("\n");
+  fs.writeFileSync(path.join(OUT, "sitemap.xml"),
+    `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
+  fs.writeFileSync(path.join(OUT, "robots.txt"),
+    `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\n`);
+  console.log(`sitemap.xml · ${htmls.length}개 URL · robots.txt`);
+}
+
+// IndexNow 키 파일 — 이 파일이 사이트에 있어야 제출이 인증된다(계정 없이 되는 유일한 경로)
+{
+  const kf = path.join(".indexnow-key");
+  if (fs.existsSync(kf)) {
+    const key = fs.readFileSync(kf, "utf-8").trim();
+    if (key) { fs.writeFileSync(path.join(OUT, key + ".txt"), key + "\n"); console.log("indexnow key 파일 생성"); }
+  }
+}

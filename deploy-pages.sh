@@ -33,3 +33,6 @@ git -c user.email=billy5285@gmail.com -c user.name=billyssam \
     commit -q -m "publish: $(date '+%Y-%m-%d %H:%M') · ${PAGES}장"
 git push -q -u origin gh-pages 2>&1 | tail -2
 echo "올림 · ${PAGES}장 → gh-pages"
+
+# 올렸으면 알린다. 안 알리면 발견까지 몇 주가 더 걸린다.
+cd "$HERE" && "$NODE" notify-index.mjs
