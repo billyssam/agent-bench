@@ -454,6 +454,20 @@ const pages = 1 + (tasksData ? tasksData.tasks.length : 0);
 if (allData) console.log(`전수: ${allData.listed}개 중 answers ${allData.tally.answers} · gone ${allData.tally.gone}`);
 console.log(`dist · 페이지 ${pages}장 · 모델 ${rows.length} · 작업 ${tasksData ? tasksData.tasks.length : 0}`);
 
+
+// public/ 은 그대로 실린다 — 검색엔진 소유권 확인 파일처럼 손으로 받은 것들이 여기 있다.
+{
+  const PUB = "public";
+  if (fs.existsSync(PUB)) {
+    let n = 0;
+    for (const f of fs.readdirSync(PUB)) {
+      fs.copyFileSync(path.join(PUB, f), path.join(OUT, f));
+      n++;
+    }
+    if (n) console.log(`public/ ${n}개 복사`);
+  }
+}
+
 // ── 사이트맵 + robots ─────────────────────────────────────────────
 // 크롤러에게 "여기 뭐가 있는지" 알려 주는 유일한 파일. 없으면 발견까지 몇 주가 더 걸린다.
 {
