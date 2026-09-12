@@ -8,8 +8,8 @@ cd "$HERE" || exit 1
 LOG="$HERE/run.log"
 say(){ echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >> "$LOG"; }
 
-# 키: 금고가 이 맥에 없어서 꽁돈AI 파이프라인 .env 를 읽는다.
-ENVF="$HOME/Desktop/꽁돈AI/_OPERATION/pipeline/.env"
+# 키는 저장소 밖에서 읽는다. 경로는 환경변수로 받고 기본값은 홈의 점파일이다.
+ENVF="${AGENT_BENCH_ENV_FILE:-$HOME/.agent-bench.env}"
 if [ ! -f "$ENVF" ]; then say "키 파일 없음: $ENVF"; exit 1; fi
 GEMINI_API_KEY=$(grep -E '^GEMINI_API_KEY=' "$ENVF" | head -1 | cut -d= -f2- | tr -d '"'"'"'')
 export GEMINI_API_KEY
