@@ -2,22 +2,24 @@
  "measured_at": "2026-09-12T16:29:16.944Z",
  "listed": 40,
  "tally": {
-  "quota": 10,
+  "answers": 16,
   "gone": 9,
   "wrong-shape": 6,
-  "answers": 15
+  "quota": 9
  },
  "rows": [
   {
    "model": "gemini-2.5-flash",
-   "http": 429,
-   "verdict": "quota",
-   "ms": 275,
+   "http": 200,
+   "verdict": "answers",
+   "ms": 1139,
    "text": "",
    "rechecked": 2,
    "reason": "RESOURCE_EXHAUSTED",
    "msg": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to",
-   "confirmed_solo_404": false
+   "confirmed_solo_404": false,
+   "verified_at": "2026-09-12T19:10:03.944Z",
+   "verified_http": 200
   },
   {
    "model": "gemini-2.5-pro",
@@ -429,5 +431,5 @@
   }
  ],
  "note": "전수 조사가 무료 티어 쿼터를 태운다. 쿼터가 소진되면 서버는 모델 존재를 확인하기 전에 429 를 준다 — 즉 429 는 404 를 가린다. gone 중 confirmed_solo_404=true 인 것만 쿼터 회복 뒤 단독 호출로 확인했다. quota 로 남은 것은 없는 모델인지 한도인지 가리지 못했다.",
- "verified_last": "2026-09-12T16:41:05.179Z"
+ "verified_last": "2026-09-12T19:17:35.237Z"
 }

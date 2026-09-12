@@ -26,7 +26,8 @@ sleep 120   # 쿼터를 식힌다
 
 # 2) 작업 측정
 say "작업 측정 시작"
-"$NODE" bench/run-tasks.mjs \
+# --fill : 이미 답 받은 칸은 건너뛴다. 매번 전체를 물으면 쿼터가 앞에서 말라 뒷칸이 영영 빈다.
+"$NODE" bench/run-tasks.mjs --fill \
   gemini-2.5-flash gemini-2.5-flash-lite gemini-3-flash-preview \
   gemini-3.1-flash-lite gemini-3.5-flash gemini-3.5-flash-lite >> "$LOG" 2>&1
 say "작업 측정 끝 (종료 $?)"

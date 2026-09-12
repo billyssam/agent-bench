@@ -531,7 +531,15 @@ if (allData) {
     body: body + extra
   }));
 }
-const pages = 1 + (tasksData ? tasksData.tasks.length : 0);
+// 🔴 세는 대신 계산하면 로그가 거짓말한다 — 모델 페이지가 늘어도 숫자가 그대로였다.
+const pages = (function count(dir) {
+  let n = 0;
+  for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (e.isDirectory()) n += count(path.join(dir, e.name));
+    else if (e.name === "index.html") n++;
+  }
+  return n;
+})(OUT);
 if (allData) console.log(`전수: ${allData.listed}개 중 answers ${allData.tally.answers} · gone ${allData.tally.gone}`);
 console.log(`dist · 페이지 ${pages}장 · 모델 ${rows.length} · 작업 ${tasksData ? tasksData.tasks.length : 0}`);
 
