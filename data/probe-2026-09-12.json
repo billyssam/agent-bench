@@ -1,0 +1,89 @@
+{
+ "measured_at": "2026-09-12T15:51:13.231Z",
+ "prompt": "Reply with exactly one word: OK",
+ "timeout_ms": 30000,
+ "rows": [
+  {
+   "model": "gemini-2.5-pro",
+   "ok": false,
+   "http": 404,
+   "ms": 383,
+   "reason": "NOT_FOUND",
+   "msg": "This model models/gemini-2.5-pro is no longer available to new users. Please update your code to use models/gemini-3.1-pro-preview for the l"
+  },
+  {
+   "model": "gemini-2.5-flash",
+   "ok": true,
+   "http": 200,
+   "ms": 997,
+   "text": "OK",
+   "finish": "STOP",
+   "in_tok": 7,
+   "out_tok": 1,
+   "think_tok": 25
+  },
+  {
+   "model": "gemini-2.5-flash-lite",
+   "ok": true,
+   "http": 200,
+   "ms": 790,
+   "text": "OK",
+   "finish": "STOP",
+   "in_tok": 7,
+   "out_tok": 1,
+   "think_tok": null
+  },
+  {
+   "model": "gemini-3-flash-preview",
+   "ok": true,
+   "http": 200,
+   "ms": 1431,
+   "text": "OK",
+   "finish": "STOP",
+   "in_tok": 7,
+   "out_tok": 1,
+   "think_tok": 41
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "ok": true,
+   "http": 200,
+   "ms": 672,
+   "text": "OK",
+   "finish": "STOP",
+   "in_tok": 7,
+   "out_tok": 1,
+   "think_tok": null
+  },
+  {
+   "model": "gemini-3.1-pro-preview",
+   "ok": false,
+   "http": 429,
+   "ms": 230,
+   "reason": "RESOURCE_EXHAUSTED",
+   "msg": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google."
+  },
+  {
+   "model": "gemini-3.5-flash",
+   "ok": true,
+   "http": 200,
+   "ms": 1612,
+   "text": "OK",
+   "finish": "STOP",
+   "in_tok": 7,
+   "out_tok": null,
+   "think_tok": 103
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "ok": true,
+   "http": 200,
+   "ms": 676,
+   "text": "OK",
+   "finish": "STOP",
+   "in_tok": 7,
+   "out_tok": 1,
+   "think_tok": null
+  }
+ ]
+}

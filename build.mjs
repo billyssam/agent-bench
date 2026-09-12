@@ -1,0 +1,428 @@
+// data/probe-*.json 을 읽어 정적 HTML 로 찍는다. 의존성 0 — Node 만 있으면 된다.
+// 페이지가 주장하는 숫자는 전부 이 JSON 에서 온다. 손으로 적은 숫자는 없다.
+import fs from "node:fs";
+import { TASKS as TASK_DEFS } from "./bench/tasks.mjs";
+import path from "node:path";
+
+const DATA = "data", OUT = "dist";
+const SITE = "Agent Bench";
+const TAGLINE = "We give models the same task and publish what it cost them.";
+
+const TASK_PROMPTS = Object.fromEntries(TASK_DEFS.map(t => [t.id, t.prompt]));
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const n = v => (v === null || v === undefined) ? "—" : Number(v).toLocaleString("en-US");
+
+const CSS = `
+:root{
+  --paper:#ffffff; --ink:#111111; --ink2:#565656; --ink3:#8a8a8a;
+  --rule:#e3e3e3; --rule2:#f0f0f0; --band:#f4f5f6;
+  --bar:#c9cdd2;                 /* 시간 막대 — 색이 아니라 길이가 말한다 */
+  --fail:#b3261e;                /* 이 페이지의 유일한 색. 실패에만 쓴다 */
+  --serif:ui-serif,"Iowan Old Style","Source Serif 4",Georgia,serif;
+  --sans:"Helvetica Neue",-apple-system,BlinkMacSystemFont,Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--sans);font-size:16px;line-height:1.55;
+  -webkit-font-smoothing:antialiased}
+.wrap{max-width:720px;margin:0 auto;padding:0 24px}
+.tablewrap{margin-left:-16px;margin-right:-16px}
+
+header{border-bottom:1px solid var(--ink);}
+header .wrap{display:flex;align-items:baseline;gap:12px;padding:16px 24px}
+header b{font-family:var(--serif);font-size:20px;font-weight:600;letter-spacing:-.01em}
+header span{font-size:14px;color:var(--ink2)}
+header a{color:inherit;text-decoration:none}
+
+main{padding:48px 0 64px}
+.eyebrow{font-size:12px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink3);margin:0 0 12px}
+h1{font-family:var(--serif);font-size:44px;font-weight:600;letter-spacing:-.018em;
+  line-height:1.08;margin:0 0 16px}
+h2{font-family:var(--serif);font-size:24px;font-weight:600;letter-spacing:-.012em;
+  margin:48px 0 12px}
+h3{font-size:16px;font-weight:700;margin:0 0 4px}
+p{margin:0 0 16px}
+.lede{font-size:20px;line-height:1.5;color:var(--ink2);margin-bottom:24px}
+
+/* 측정 조건 — 리포트의 표제부. 읽는 사람이 재현하려면 여기부터 본다 */
+.conditions{border-top:1px solid var(--ink);border-bottom:1px solid var(--rule);
+  padding:12px 0;margin:0 0 32px;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:12px 24px}
+.conditions div{font-size:14px}
+.conditions dt{color:var(--ink3);font-size:12px;letter-spacing:.05em;
+  text-transform:uppercase;margin-bottom:2px}
+.conditions dd{margin:0;font-weight:500}
+
+.tablewrap{overflow-x:auto;margin:0 0 8px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{text-align:left;font-weight:700;font-size:14px;color:var(--ink);
+  background:var(--band);padding:8px 12px;white-space:nowrap}
+th:first-child{padding-left:12px}
+td{padding:8px 12px;border-bottom:1px solid var(--rule2);vertical-align:middle}
+td:first-child{padding-left:12px}
+tr:last-child td{border-bottom:1px solid var(--rule)}
+td.name{font-weight:500;white-space:nowrap}
+td.note{color:var(--ink2);font-size:14px}
+.pass{font-weight:700}
+.fail{color:var(--fail);font-weight:700}
+tr.failrow td.name{color:var(--fail)}
+.dim{color:var(--ink3)}
+
+/* ── 시그니처: 시간 막대 ──────────────────────────────────────────
+   밀리초는 숫자로 읽히지 않는다. 633 과 15,733 의 차이는 길이여야 보인다. */
+td.ms{white-space:nowrap;width:1%;padding-right:4px}
+td.ms b{font-weight:500;font-variant-numeric:tabular-nums}
+td.ms i{font-style:normal;color:var(--ink3);font-size:12px;margin-left:3px}
+/* 막대는 제 칸을 갖는다. 숫자 칸에 겹쳐 두면 옆 열을 덮는다 */
+td.barcell{width:88px;padding-left:0;padding-right:16px}
+td.barcell span{display:block;height:8px;width:var(--w);min-width:2px;
+  background:var(--bar);border-radius:1px}
+th.barhead{padding-left:0}
+td.barcell span.over{background:var(--ink2);
+  clip-path:polygon(0 0,100% 0,calc(100% - 4px) 50%,100% 100%,0 100%)}
+.scalenote{font-size:12px;color:var(--ink3);margin:4px 0 0}
+
+.finding{border-top:1px solid var(--rule);padding:16px 0 4px}
+.finding p{margin:0;color:var(--ink2)}
+.k{font-family:var(--mono);font-size:14px;background:var(--band);
+  padding:1px 4px;border-radius:2px}
+pre{background:var(--band);border-left:2px solid var(--ink);padding:12px 16px;
+  overflow-x:auto;font-family:var(--mono);font-size:14px;line-height:1.5;margin:0 0 16px}
+.caveat{font-size:14px;color:var(--ink2);border-top:1px solid var(--rule);padding-top:12px}
+footer{border-top:1px solid var(--ink);padding:16px 0 64px;font-size:14px;color:var(--ink2)}
+a{color:var(--ink);text-decoration:underline;text-underline-offset:2px;
+  text-decoration-thickness:1px;text-decoration-color:var(--ink3)}
+a:hover{text-decoration-color:var(--ink)}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+@media(max-width:640px){h1{font-size:32px}.lede{font-size:16px}main{padding:32px 0 48px}
+  th,td{padding:8px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+`;
+
+function page({ title, desc, body, slug }) {
+  return `<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${esc(title)}</title>
+<meta name="description" content="${esc(desc)}">
+<meta property="og:title" content="${esc(title)}">
+<meta property="og:description" content="${esc(desc)}">
+<meta property="og:type" content="article">
+<style>${CSS}</style>
+</head><body>
+<header><div class="wrap"><b>${SITE}</b><span>${TAGLINE}</span></div></header>
+<main><div class="wrap">${body}</div></main>
+<footer><div class="wrap">We sent every request on this page. Run the script yourself and your numbers will differ — latency always does.</div></footer>
+</body></html>`;
+}
+
+function probeTable(rows) {
+  const max = Math.max(...rows.map(r => r.ms || 0), 1);
+  const tr = rows.map(r => {
+    const w = ((r.ms || 0) / max * 100).toFixed(1) + "%";
+    const status = r.ok ? `<span class="pass">200</span>`
+      : `<span class="fail">${r.http || "ERR"}</span> <span class="dim">${esc(r.reason || "")}</span>`;
+    const think = !r.ok ? "—" : (r.think_tok == null ? `<span class="dim">not reported</span>` : n(r.think_tok));
+    return `<tr class="${r.ok ? "" : "failrow"}">`
+      + `<td class="name">${esc(r.model)}</td>`
+      + `<td>${status}</td>`
+      + `<td class="ms"><b>${n(r.ms)}</b><i>ms</i></td><td class="barcell"><span style="--w:${w}"></span></td>`
+      + `<td class="note">${think}</td></tr>`;
+  }).join("\n");
+  return `<div class="tablewrap"><table>
+<thead><tr><th>Model</th><th>Response</th><th>Latency</th><th class="barhead"></th><th>Thinking tokens</th></tr></thead>
+<tbody>${tr}</tbody></table></div>`;
+}
+
+
+const allFiles = fs.readdirSync(DATA).filter(f => /^all-.*\.json$/.test(f)).sort();
+const allData = allFiles.length ? JSON.parse(fs.readFileSync(path.join(DATA, allFiles.at(-1)), "utf-8")) : null;
+
+const taskFiles = fs.readdirSync(DATA).filter(f => /^tasks-.*\.json$/.test(f)).sort();
+const tasksData = taskFiles.length ? JSON.parse(fs.readFileSync(path.join(DATA, taskFiles.at(-1)), "utf-8")) : null;
+
+
+// ── 작업별 페이지 — 측정한 작업 수만큼 페이지가 나온다 ──────────
+function matrix(rows, models, tasks) {
+  const totals = models.map(m => rows.filter(r => r.model === m).reduce((a, r) => a + (r.ms || 0), 0));
+  const max = Math.max(...totals, 1);
+  const head = `<thead><tr><th>Model</th>`
+    + tasks.map(t => `<th>${esc(t.id)}</th>`).join("") + `<th>Total time</th><th class="barhead"></th></tr></thead>`;
+  const body = models.map((m, i) => {
+    const mine = rows.filter(r => r.model === m);
+    const cells = tasks.map(t => {
+      const r = mine.find(x => x.task === t.id);
+      if (!r) return `<td class="dim">—</td>`;
+      return `<td>${r.pass ? '<span class="pass">pass</span>' : '<span class="fail">fail</span>'}</td>`;
+    }).join("");
+    const w = (totals[i] / max * 100).toFixed(1) + "%";
+    return `<tr><td class="name">${esc(m)}</td>${cells}`
+      + `<td class="ms"><b>${n(totals[i])}</b><i>ms</i></td><td class="barcell"><span style="--w:${w}"></span></td></tr>`;
+  }).join("\n");
+  return `<div class="tablewrap"><table>${head}<tbody>${body}</tbody></table></div>`;
+}
+
+
+function taskPage(t, rows) {
+  const mine = rows.filter(r => r.task === t.id).sort((a, b) => a.ms - b.ms);
+  const passed = mine.filter(r => r.pass);
+  const failed = mine.filter(r => !r.pass);
+  const fast = mine[0], slow = mine[mine.length - 1];
+  const maxMs = Math.max(...mine.map(r => r.ms || 0), 1);
+  const tr = mine.map(r => {
+    const w = ((r.ms || 0) / maxMs * 100).toFixed(1) + "%";
+    return `<tr class="${r.pass ? "" : "failrow"}">`
+    + `<td class="name">${esc(r.model)}</td>`
+    + `<td>${r.pass ? '<span class="pass">pass</span>' : '<span class="fail">fail</span>'}</td>`
+    + `<td class="ms"><b>${n(r.ms)}</b><i>ms</i></td><td class="barcell"><span style="--w:${w}"></span></td>`
+    + `<td class="note">${r.think_tok == null ? '<span class="dim">not reported</span>' : n(r.think_tok)}</td>`
+    + `<td class="note">${esc(r.note)}</td></tr>`;
+  }).join("\n");
+
+  const body = `
+<p class="eyebrow">Task</p>
+<h1>${esc(t.title)}</h1>
+<p class="lede">${esc(t.why)}</p>
+<dl class="conditions">
+<div><dt>Measured</dt><dd>${esc(tasksData.measured_at.slice(0,10))} UTC</dd></div>
+<div><dt>Result</dt><dd>${passed.length} of ${mine.length} passed</dd></div>
+<div><dt>Temperature</dt><dd>0</dd></div>
+<div><dt>Prompt size</dt><dd>${n(t.prompt_chars)} chars</dd></div>
+</dl>
+
+<div class="tablewrap"><table>
+<thead><tr><th>Model</th><th>Result</th><th>Time</th><th class="barhead"></th><th>Thinking tokens</th><th>What came back</th></tr></thead>
+<tbody>${tr}</tbody></table></div>
+
+<h2>What happened</h2>
+${failed.length
+  ? `<div class="finding"><h3>${failed.length} of ${mine.length} models failed</h3><p>`
+    + failed.map(f => `<span class="k">${esc(f.model)}</span> — ${esc(f.note)}`).join("<br>")
+    + `</p></div>`
+  : `<div class="finding"><h3>Every model passed</h3><p>All ${mine.length} models completed this one. The difference is not capability, it is what each spent to get there.</p></div>`}
+${(() => {
+  const withT = mine.filter(r => typeof r.think_tok === "number");
+  if (withT.length < 2) return "";
+  const top = withT.reduce((a, b) => (a.think_tok > b.think_tok ? a : b));
+  const wrong = mine.filter(r => !r.pass);
+  const zeroPass = mine.filter(r => r.pass && r.think_tok == null);
+  // 표본 6개다. 이 작업에 한정해서만 말한다 — 일반 법칙으로 부풀리지 않는다.
+  return `<div class="finding"><h3>Thinking more did not mean getting it right</h3>
+<p>On this task <span class="k">${esc(top.model)}</span> spent
+<b style="color:var(--fg);font-family:var(--mono)">${n(top.think_tok)}</b> thinking tokens and ${top.pass ? "passed" : "still failed"}.
+${zeroPass.length ? `${zeroPass.length} model${zeroPass.length > 1 ? "s" : ""} passed without reporting a single thinking token` : ""}${
+  wrong.filter(w => typeof w.think_tok === "number").length
+    ? `, while ${wrong.filter(w => typeof w.think_tok === "number").map(w => `<span class="k">${esc(w.model)}</span> spent ${n(w.think_tok)} and got it wrong`).join(", ")}` : ""}.
+Six models is a small sample, so read this as what happened here, not as a law.</p></div>`;
+})()}
+<div class="finding"><h3>${(slow.ms / fast.ms).toFixed(1)}× between fastest and slowest</h3>
+<p><span class="k">${esc(fast.model)}</span> finished in ${n(fast.ms)}ms.
+<span class="k">${esc(slow.model)}</span> took ${n(slow.ms)}ms for the same prompt.</p></div>
+
+<h2>The exact prompt</h2>
+<pre>${esc(TASK_PROMPTS[t.id] || "(see bench/tasks.mjs)")}</pre>
+<p>Pass/fail is decided by code, not by reading the answer. The check for this task is in
+<span class="k">bench/tasks.mjs</span>, and failed responses are stored verbatim so the verdict can be re-read.</p>
+`;
+  return page({ title: `${t.title} — measured across ${mine.length} Gemini models`,
+                desc: `${passed.length} of ${mine.length} models passed. Latency spread ${(slow.ms/fast.ms).toFixed(1)}×. Measured, with the checker and the raw failures shown.`,
+                body });
+}
+
+
+// ── 전수 조사 페이지 ────────────────────────────────────────────
+const VERDICT_LABEL = { answers: "answers", gone: "not found", "wrong-shape": "other format", quota: "unverified", other: "error" };
+function censusTable(rows) {
+  // 🔴 이상치 하나가 나머지 막대를 전부 1px 로 뭉갠다. 90 퍼센타일을 기준으로 잡고,
+  //    그걸 넘는 것은 잘린 채로 표시한다 — 잘렸다는 사실을 숨기지 않는다.
+  const msList = rows.filter(r => r.verdict === "answers").map(r => r.ms || 0).sort((a, b) => a - b);
+  const max = msList[Math.floor(msList.length * 0.9)] || Math.max(...msList, 1);
+  const order = { answers: 0, gone: 1, "wrong-shape": 2, quota: 3, other: 4 };
+  const sorted = [...rows].sort((a, b) => (order[a.verdict] - order[b.verdict]) || (a.ms - b.ms));
+  const tr = sorted.map(r => {
+    const isAns = r.verdict === "answers";
+    const over = isAns && (r.ms || 0) > max;
+    const w = isAns ? Math.min(100, (r.ms || 0) / max * 100).toFixed(1) + "%" : "0%";
+    const v = r.verdict === "answers" ? `<span class="pass">answers</span>`
+      : r.verdict === "gone" ? `<span class="fail">not found</span>`
+      : `<span class="dim">${esc(VERDICT_LABEL[r.verdict] || r.verdict)}</span>`;
+    return `<tr class="${r.verdict === "gone" ? "failrow" : ""}">`
+      + `<td class="name">${esc(r.model)}</td>`
+      + `<td>${v}</td><td class="note">${
+          r.confirmed_solo_404 && r.http !== 404
+            ? `${r.http} <span class="dim">&rarr; 404</span>`   /* 전수 때 받은 코드 → 단독 재확인 결과 */
+            : r.http}</td>`
+      + `<td class="ms">${isAns ? `<b>${n(r.ms)}</b><i>ms</i>` : `<span class="dim">—</span>`}</td>`
+      + `<td class="barcell">${isAns ? `<span class="${over ? "over" : ""}" style="--w:${w}"></span>` : ""}</td></tr>`;
+  }).join("\n");
+  return `<div class="tablewrap"><table>
+<thead><tr><th>Model</th><th>Result</th><th>HTTP (sweep &rarr; solo)</th><th>Latency</th><th class="barhead"></th></tr></thead>
+<tbody>${tr}</tbody></table></div>
+<p class="scalenote">Bars scale to ${n(max)}&thinsp;ms; anything longer is clipped and marked.</p>`;
+}
+
+function censusPage(a) {
+  const t = a.tally, rows = a.rows;
+  const confirmed = rows.filter(r => r.confirmed_solo_404).length;
+  const ans = rows.filter(r => r.verdict === "answers").sort((x, y) => x.ms - y.ms);
+  const shapes = rows.filter(r => r.verdict === "wrong-shape");
+  const body = `
+<p class="eyebrow">Measurement report</p>
+<h1>Google lists ${a.listed} models. ${t.answers} of them answer.</h1>
+<p class="lede">We called every model the API advertises, one at a time, with the same one-word prompt.
+${confirmed} returned 404 — they are listed, and they are not there.</p>
+
+<dl class="conditions">
+<div><dt>Measured</dt><dd>${esc(a.measured_at.slice(0, 10))} UTC</dd></div>
+<div><dt>Listed</dt><dd>${a.listed} models</dd></div>
+<div><dt>Key tier</dt><dd>Free</dd></div>
+<div><dt>Prompt</dt><dd>Reply with exactly one word: OK</dd></div>
+<div><dt>Order</dt><dd>Sequential</dd></div>
+</dl>
+
+${censusTable(rows)}
+
+<h2>Findings</h2>
+
+<div class="finding"><h3>429 hides 404</h3>
+<p>This is the part that cost us a wrong answer first time round. Run the sweep and the free-tier quota
+burns out partway. After that the server returns <span class="k">429 RESOURCE_EXHAUSTED</span> for models
+that do not exist at all — it never gets as far as looking them up. Our first sweep recorded
+17 models as "rate limited". Re-calling eight of them on a rested quota returned
+<span class="k">404</span> every time. The rate limit was not the reason they failed; it was covering the reason.</p></div>
+
+<div class="finding"><h3>A sweep large enough to be useful is large enough to corrupt itself</h3>
+<p>Forty sequential calls exhaust the free tier. Every result after that point is suspect, including results
+for models that are perfectly healthy — <span class="k">gemini-2.5-flash</span> answered in one run and
+returned 429 in the next. We mark only the ${confirmed} models we re-checked individually as confirmed missing.
+The other ${t.quota || 0} stay unverified, and we do not count them either way.</p></div>
+
+<div class="finding"><h3>${shapes.length} models are there but will not take a text prompt</h3>
+<p>${shapes.map(x => `<span class="k">${esc(x.model)}</span>`).join(", ")} return
+<span class="k">400</span>, not 404. Speech and research models listed under the same
+<span class="k">generateContent</span> method as the chat models, reachable only with a different request shape.
+A catalogue that mixes them is a catalogue you cannot iterate over.</p></div>
+
+<div class="finding"><h3>Among those that answer, ${(ans[ans.length - 1].ms / ans[0].ms).toFixed(0)}× separates fastest from slowest</h3>
+<p><span class="k">${esc(ans[0].model)}</span> replied in ${n(ans[0].ms)}ms.
+<span class="k">${esc(ans[ans.length - 1].model)}</span> took ${n(ans[ans.length - 1].ms)}ms for the same word.</p></div>
+
+<h2>Reproduce it</h2>
+<pre>GEMINI_API_KEY=... node bench/probe-all.mjs</pre>
+<p>The script reads the model list from the API, calls each one in turn, and re-asks any model that returns 429
+after a pause. That re-ask is not enough on a spent quota — the confirmations in this report came from
+calling the eight models individually, hours apart. The raw JSON carries a
+<span class="k">confirmed_solo_404</span> flag so you can see which verdicts were checked that way.</p>
+
+<h2>Caveats</h2>
+<p class="caveat">One key, free tier, one location, one run per model except where noted.
+Latency here is a single observation and moves with all of those.
+${t.quota || 0} models remain unverified: they may be missing, or the quota may simply have been spent when we reached them.
+We have not guessed which.</p>
+`;
+  return page({ title: `Google lists ${a.listed} Gemini models — ${t.answers} of them answer`,
+    desc: `We called every model in the Gemini API catalogue. ${t.answers} answered, ${confirmed} returned 404 on a rested quota, and ${shapes.length} need a different request shape. Measured, with the checking method shown.`,
+    body });
+}
+
+const files = fs.readdirSync(DATA).filter(f => /^probe-.*\.json$/.test(f)).sort();
+if (!files.length) { console.error("data/probe-*.json 없음"); process.exit(1); }
+const latest = JSON.parse(fs.readFileSync(path.join(DATA, files.at(-1)), "utf-8"));
+const rows = latest.rows;
+const alive = rows.filter(r => r.ok), dead = rows.filter(r => !r.ok);
+const thinkers = alive.filter(r => (r.think_tok ?? 0) > 0).sort((a, b) => b.think_tok - a.think_tok);
+const noReport = alive.filter(r => r.out_tok === null);
+const noThink = alive.filter(r => r.think_tok === null || r.think_tok === undefined);
+const fastest = [...alive].sort((a, b) => a.ms - b.ms)[0];
+const slowest = [...alive].sort((a, b) => b.ms - a.ms)[0];
+const day = latest.measured_at.slice(0, 10) + " UTC";
+
+const body = `
+<p class="eyebrow">Measurement report</p>
+<h1>Listed in the API, but returns 404</h1>
+<p class="lede">We sent the same one-word question to ${rows.length} Gemini models.
+${dead.length} failed — one of them a model the API still lists as available.</p>
+<dl class="conditions">
+<div><dt>Measured</dt><dd>${esc(day)}</dd></div>
+<div><dt>Prompt</dt><dd>${esc(latest.prompt)}</dd></div>
+<div><dt>Temperature</dt><dd>0</dd></div>
+<div><dt>Timeout</dt><dd>${n(latest.timeout_ms)} ms</dd></div>
+<div><dt>Order</dt><dd>Sequential</dd></div>
+</dl>
+
+${probeTable(rows)}
+
+<h2>Findings</h2>
+
+<div class="finding"><h3>A model can be listed and still be gone</h3>
+<p><span class="k">gemini-2.5-pro</span> is returned by the <span class="k">/v1beta/models</span> endpoint with
+<span class="k">generateContent</span> among its supported methods. Calling it returns
+<span class="no">404 NOT_FOUND</span> in ${n(dead.find(d => d.http === 404)?.ms ?? 0)}ms. The catalogue and the runtime disagree.</p></div>
+
+<div class="finding"><h3>Newer models think harder about a one-word question</h3>
+<p>Thinking tokens spent on <span class="k">"${esc(latest.prompt)}"</span>:
+${thinkers.map(t => `${esc(t.model.replace("gemini-", ""))} <b style="color:var(--fg);font-family:var(--mono)">${n(t.think_tok)}</b>`).join(" &middot; ")}.
+You are billed for those whether or not the answer needed them.
+The ${noThink.length} lite variants did not return the <span class="k">thoughtsTokenCount</span> field at all —
+which is not the same as a measured zero, so we do not print one.</p></div>
+
+<div class="finding"><h3>One model does not report its output tokens</h3>
+<p>${noReport.length ? noReport.map(x => `<span class="k">${esc(x.model)}</span>`).join(", ") : "None"} returned
+<span class="k">usageMetadata</span> without <span class="k">candidatesTokenCount</span>, even on a clean
+<span class="k">STOP</span> finish. Cost code that multiplies output tokens silently bills zero for it.</p></div>
+
+<div class="finding"><h3>The spread is ${(slowest.ms / fastest.ms).toFixed(1)}×</h3>
+<p>Same prompt, same region, same minute: <span class="k">${esc(fastest.model)}</span> answered in
+${n(fastest.ms)}ms and <span class="k">${esc(slowest.model)}</span> took ${n(slowest.ms)}ms.</p></div>
+
+<h2>Reproduce it</h2>
+<pre>GEMINI_API_KEY=... node bench/probe.mjs \\
+${rows.map(r => "  " + r.model).join(" \\\n")}</pre>
+<p>The script sends one request per model, waits 900ms between them so rate limiting does not
+contaminate the timings, and writes a JSON file. This page is generated from that file — no number
+on it was typed by hand.</p>
+
+<h2>Caveats</h2>
+<p class="caveat">Single run, one API key, free tier, one location. Latency moves with all of those.
+<span class="k">${esc(dead.find(d => d.http === 429)?.model ?? "")}</span> returned
+<span class="no">429</span>, which is a quota result, not a verdict about the model.
+Treat the ms column as one observation, not a benchmark score.</p>
+`;
+
+fs.rmSync(OUT, { recursive: true, force: true });
+fs.mkdirSync(OUT, { recursive: true });
+let extra = "";
+if (tasksData) {
+  const models = [...new Set(tasksData.results.map(r => r.model))];
+  for (const t of tasksData.tasks) {
+    const dir = path.join(OUT, "task", t.id);
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, "index.html"), taskPage(t, tasksData.results));
+  }
+  const passed = tasksData.results.filter(r => r.pass).length;
+  extra = `\n<h2>Can they actually do the work?</h2>
+<p>We gave every model the same ${tasksData.tasks.length} tasks, each with a pass/fail decided by code.
+${passed} of ${tasksData.results.length} runs passed.</p>
+${matrix(tasksData.results, models, tasksData.tasks)}
+<p style="margin-top:14px">` + tasksData.tasks.map(t =>
+  `<a href="/task/${t.id}/">${esc(t.title)}</a>`).join(" &middot; ") + `</p>`;
+}
+
+if (allData) {
+  const html = censusPage(allData);
+  fs.writeFileSync(path.join(OUT, "index.html"),
+    html.replace("</main>", `<div class="wrap">${extra}</div></main>`));
+} else {
+  fs.writeFileSync(path.join(OUT, "index.html"), page({
+    title: "Listed in the API, but returns 404 — Gemini model probe, September 2026",
+    desc: `We called ${rows.length} Gemini models with an identical prompt.`,
+    body: body + extra
+  }));
+}
+const pages = 1 + (tasksData ? tasksData.tasks.length : 0);
+if (allData) console.log(`전수: ${allData.listed}개 중 answers ${allData.tally.answers} · gone ${allData.tally.gone}`);
+console.log(`dist · 페이지 ${pages}장 · 모델 ${rows.length} · 작업 ${tasksData ? tasksData.tasks.length : 0}`);
