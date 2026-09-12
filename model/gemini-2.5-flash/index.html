@@ -111,7 +111,7 @@ a:hover{text-decoration-color:var(--ink)}
 <div><dt>Total time</dt><dd>10,305 ms</dd></div>
 <div><dt>Thinking tokens</dt><dd>1,104</dd></div>
 <div><dt>One-word probe</dt><dd>1,139 ms</dd></div>
-<div><dt>Not asked</dt><dd>4 (quota)</dd></div>
+<div><dt>Not asked</dt><dd>9 (quota)</dd></div>
 </dl>
 
 <div class="tablewrap"><table>
@@ -126,7 +126,7 @@ a:hover{text-decoration-color:var(--ink)}
 <h2>Findings</h2>
 <div class="finding"><h3>Where it failed</h3><p><span class="k">Answer in exactly seven words</span> — 6 words</p></div>
 <div class="finding"><h3>It reports thinking tokens</h3><p>1,104 across 5 tasks. Those are billed, and they land before the first output token — which is why wall time and output length disagree on this model.</p></div>
-<div class="finding"><h3>4 tasks could not be asked</h3><p>The free-tier quota was spent before we got to <span class="k">Write a sentence without the letter E</span>, <span class="k">Return an array of exactly five items</span>, <span class="k">Reverse a list exactly</span>, <span class="k">Four-step arithmetic, number only</span>. Those are left out of the pass rate rather than counted against the model.</p></div>
+<div class="finding"><h3>9 tasks could not be asked</h3><p>The free-tier quota was spent before we got to <span class="k">Write a sentence without the letter E</span>, <span class="k">Return an array of exactly five items</span>, <span class="k">Reverse a list exactly</span>, <span class="k">Four-step arithmetic, number only</span>, <span class="k">Fill a nested schema without inventing fields</span>, <span class="k">Map a list without reordering it</span>, <span class="k">Say it does not know</span>, <span class="k">Answer in Korean when told to</span>, <span class="k">Convert through three units</span>. Those are left out of the pass rate rather than counted against the model.</p></div>
 
 <h2>How this was measured</h2>
 <p>Every task was sent at temperature 0, one request at a time, and judged by code — the checkers live in
