@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Find one fact buried in a long document — measured across 6 Gemini models</title>
+<meta name="description" content="6 of 6 models passed. Latency spread 2.1×. Measured, with the checker and the raw failures shown.">
+<meta property="og:title" content="Find one fact buried in a long document — measured across 6 Gemini models">
+<meta property="og:description" content="6 of 6 models passed. Latency spread 2.1×. Measured, with the checker and the raw failures shown.">
+<meta property="og:type" content="article">
+<style>
+:root{
+  --paper:#ffffff; --ink:#111111; --ink2:#565656; --ink3:#8a8a8a;
+  --rule:#e3e3e3; --rule2:#f0f0f0; --band:#f4f5f6;
+  --bar:#c9cdd2;                 /* 시간 막대 — 색이 아니라 길이가 말한다 */
+  --fail:#b3261e;                /* 이 페이지의 유일한 색. 실패에만 쓴다 */
+  --serif:ui-serif,"Iowan Old Style","Source Serif 4",Georgia,serif;
+  --sans:"Helvetica Neue",-apple-system,BlinkMacSystemFont,Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--sans);font-size:16px;line-height:1.55;
+  -webkit-font-smoothing:antialiased}
+.wrap{max-width:720px;margin:0 auto;padding:0 24px}
+.tablewrap{margin-left:-16px;margin-right:-16px}
+
+header{border-bottom:1px solid var(--ink);}
+header .wrap{display:flex;align-items:baseline;gap:12px;padding:16px 24px}
+header b{font-family:var(--serif);font-size:20px;font-weight:600;letter-spacing:-.01em}
+header span{font-size:14px;color:var(--ink2)}
+header a{color:inherit;text-decoration:none}
+
+main{padding:48px 0 64px}
+.eyebrow{font-size:12px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink3);margin:0 0 12px}
+h1{font-family:var(--serif);font-size:44px;font-weight:600;letter-spacing:-.018em;
+  line-height:1.08;margin:0 0 16px}
+h2{font-family:var(--serif);font-size:24px;font-weight:600;letter-spacing:-.012em;
+  margin:48px 0 12px}
+h3{font-size:16px;font-weight:700;margin:0 0 4px}
+p{margin:0 0 16px}
+.lede{font-size:20px;line-height:1.5;color:var(--ink2);margin-bottom:24px}
+
+/* 측정 조건 — 리포트의 표제부. 읽는 사람이 재현하려면 여기부터 본다 */
+.conditions{border-top:1px solid var(--ink);border-bottom:1px solid var(--rule);
+  padding:12px 0;margin:0 0 32px;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:12px 24px}
+.conditions div{font-size:14px}
+.conditions dt{color:var(--ink3);font-size:12px;letter-spacing:.05em;
+  text-transform:uppercase;margin-bottom:2px}
+.conditions dd{margin:0;font-weight:500}
+
+.tablewrap{overflow-x:auto;margin:0 0 8px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{text-align:left;font-weight:700;font-size:14px;color:var(--ink);
+  background:var(--band);padding:8px 12px;white-space:nowrap}
+th:first-child{padding-left:12px}
+td{padding:8px 12px;border-bottom:1px solid var(--rule2);vertical-align:middle}
+td:first-child{padding-left:12px}
+tr:last-child td{border-bottom:1px solid var(--rule)}
+td.name{font-weight:500;white-space:nowrap}
+td.note{color:var(--ink2);font-size:14px}
+.pass{font-weight:700}
+.fail{color:var(--fail);font-weight:700}
+tr.failrow td.name{color:var(--fail)}
+.dim{color:var(--ink3)}
+
+/* ── 시그니처: 시간 막대 ──────────────────────────────────────────
+   밀리초는 숫자로 읽히지 않는다. 633 과 15,733 의 차이는 길이여야 보인다. */
+td.ms{white-space:nowrap;width:1%;padding-right:4px}
+td.ms b{font-weight:500;font-variant-numeric:tabular-nums}
+td.ms i{font-style:normal;color:var(--ink3);font-size:12px;margin-left:3px}
+/* 막대는 제 칸을 갖는다. 숫자 칸에 겹쳐 두면 옆 열을 덮는다 */
+td.barcell{width:88px;padding-left:0;padding-right:16px}
+td.barcell span{display:block;height:8px;width:var(--w);min-width:2px;
+  background:var(--bar);border-radius:1px}
+th.barhead{padding-left:0}
+td.barcell span.over{background:var(--ink2);
+  clip-path:polygon(0 0,100% 0,calc(100% - 4px) 50%,100% 100%,0 100%)}
+.scalenote{font-size:12px;color:var(--ink3);margin:4px 0 0}
+
+.finding{border-top:1px solid var(--rule);padding:16px 0 4px}
+.finding p{margin:0;color:var(--ink2)}
+.k{font-family:var(--mono);font-size:14px;background:var(--band);
+  padding:1px 4px;border-radius:2px}
+pre{background:var(--band);border-left:2px solid var(--ink);padding:12px 16px;
+  overflow-x:auto;font-family:var(--mono);font-size:14px;line-height:1.5;margin:0 0 16px}
+.caveat{font-size:14px;color:var(--ink2);border-top:1px solid var(--rule);padding-top:12px}
+footer{border-top:1px solid var(--ink);padding:16px 0 64px;font-size:14px;color:var(--ink2)}
+a{color:var(--ink);text-decoration:underline;text-underline-offset:2px;
+  text-decoration-thickness:1px;text-decoration-color:var(--ink3)}
+a:hover{text-decoration-color:var(--ink)}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+@media(max-width:640px){h1{font-size:32px}.lede{font-size:16px}main{padding:32px 0 48px}
+  th,td{padding:8px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head><body>
+<header><div class="wrap"><b>Agent Bench</b><span>We give models the same task and publish what it cost them.</span></div></header>
+<main><div class="wrap">
+<p class="eyebrow">Task</p>
+<h1>Find one fact buried in a long document</h1>
+<p class="lede">Retrieval over a long context. The answer is present exactly once and is unguessable.</p>
+<dl class="conditions">
+<div><dt>Measured</dt><dd>2026-09-12 UTC</dd></div>
+<div><dt>Result</dt><dd>6 of 6 passed</dd></div>
+<div><dt>Temperature</dt><dd>0</dd></div>
+<div><dt>Prompt size</dt><dd>21,796 chars</dd></div>
+</dl>
+
+<div class="tablewrap"><table>
+<thead><tr><th>Model</th><th>Result</th><th>Time</th><th class="barhead"></th><th>Thinking tokens</th><th>What came back</th></tr></thead>
+<tbody><tr class=""><td class="name">gemini-3.1-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>1,131</b><i>ms</i></td><td class="barcell"><span style="--w:48.5%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">found</td></tr>
+<tr class=""><td class="name">gemini-2.5-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>1,584</b><i>ms</i></td><td class="barcell"><span style="--w:68.0%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">found</td></tr>
+<tr class=""><td class="name">gemini-2.5-flash</td><td><span class="pass">pass</span></td><td class="ms"><b>1,670</b><i>ms</i></td><td class="barcell"><span style="--w:71.6%"></span></td><td class="note">81</td><td class="note">found</td></tr>
+<tr class=""><td class="name">gemini-3.5-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>1,800</b><i>ms</i></td><td class="barcell"><span style="--w:77.2%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">found</td></tr>
+<tr class=""><td class="name">gemini-3-flash-preview</td><td><span class="pass">pass</span></td><td class="ms"><b>2,322</b><i>ms</i></td><td class="barcell"><span style="--w:99.6%"></span></td><td class="note">262</td><td class="note">found</td></tr>
+<tr class=""><td class="name">gemini-3.5-flash</td><td><span class="pass">pass</span></td><td class="ms"><b>2,331</b><i>ms</i></td><td class="barcell"><span style="--w:100.0%"></span></td><td class="note">222</td><td class="note">found</td></tr></tbody></table></div>
+
+<h2>What happened</h2>
+<div class="finding"><h3>Every model passed</h3><p>All 6 models completed this one. The difference is not capability, it is what each spent to get there.</p></div>
+<div class="finding"><h3>Thinking more did not mean getting it right</h3>
+<p>On this task <span class="k">gemini-3-flash-preview</span> spent
+<b style="color:var(--fg);font-family:var(--mono)">262</b> thinking tokens and passed.
+3 models passed without reporting a single thinking token.
+Six models is a small sample, so read this as what happened here, not as a law.</p></div>
+<div class="finding"><h3>2.1× between fastest and slowest</h3>
+<p><span class="k">gemini-3.1-flash-lite</span> finished in 1,131ms.
+<span class="k">gemini-3.5-flash</span> took 2,331ms for the same prompt.</p></div>
+
+<h2>The exact prompt</h2>
+<pre>Read the document and answer with the access code only.
+
+Section 0. Routine maintenance notes for unit 100: pressure nominal, valve seated, log archived.
+Section 1. Routine maintenance notes for unit 101: pressure nominal, valve seated, log archived.
+Section 2. Routine maintenance notes for unit 102: pressure nominal, valve seated, log archived.
+Section 3. Routine maintenance notes for unit 103: pressure nominal, valve seated, log archived.
+Section 4. Routine maintenance notes for unit 104: pressure nominal, valve seated, log archived.
+Section 5. Routine maintenance notes for unit 105: pressure nominal, valve seated, log archived.
+Section 6. Routine maintenance notes for unit 106: pressure nominal, valve seated, log archived.
+Section 7. Routine maintenance notes for unit 107: pressure nominal, valve seated, log archived.
+Section 8. Routine maintenance notes for unit 108: pressure nominal, valve seated, log archived.
+Section 9. Routine maintenance notes for unit 109: pressure nominal, valve seated, log archived.
+Section 10. Routine maintenance notes for unit 110: pressure nominal, valve seated, log archived.
+Section 11. Routine maintenance notes for unit 111: pressure nominal, valve seated, log archived.
+Section 12. Routine maintenance notes for unit 112: pressure nominal, valve seated, log archived.
+Section 13. Routine maintenance notes for unit 113: pressure nominal, valve seated, log archived.
+Section 14. Routine maintenance notes for unit 114: pressure nominal, valve seated, log archived.
+Section 15. Routine maintenance notes for unit 115: pressure nominal, valve seated, log archived.
+Section 16. Routine maintenance notes for unit 116: pressure nominal, valve seated, log archived.
+Section 17. Routine maintenance notes for unit 117: pressure nominal, valve seated, log archived.
+Section 18. Routine maintenance notes for unit 118: pressure nominal, valve seated, log archived.
+Section 19. Routine maintenance notes for unit 119: pressure nominal, valve seated, log archived.
+Section 20. Routine maintenance notes for unit 120: pressure nominal, valve seated, log archived.
+Section 21. Routine maintenance notes for unit 121: pressure nominal, valve seated, log archived.
+Section 22. Routine maintenance notes for unit 122: pressure nominal, valve seated, log archived.
+Section 23. Routine maintenance notes for unit 123: pressure nominal, valve seated, log archived.
+Section 24. Routine maintenance notes for unit 124: pressure nominal, valve seated, log archived.
+Section 25. Routine maintenance notes for unit 125: pressure nominal, valve seated, log archived.
+Section 26. Routine maintenance notes for unit 126: pressure nominal, valve seated, log archived.
+Section 27. Routine maintenance notes for unit 127: pressure nominal, valve seated, log archived.
+Section 28. Routine maintenance notes for unit 128: pressure nominal, valve seated, log archived.
+Section 29. Routine maintenance notes for unit 129: pressure nominal, valve seated, log archived.
+Section 30. Routine maintenance notes for unit 130: pressure nominal, valve seated, log archived.
+Section 31. Routine maintenance notes for unit 131: pressure nominal, valve seated, log archived.
+Section 32. Routine maintenance notes for unit 132: pressure nominal, valve seated, log archived.
+Section 33. Routine maintenance notes for unit 133: pressure nominal, valve seated, log archived.
+Section 34. Routine maintenance notes for unit 134: pressure nominal, valve seated, log archived.
+Section 35. Routine maintenance notes for unit 135: pressure nominal, valve seated, log archived.
+Section 36. Routine maintenance notes for unit 136: pressure nominal, valve seated, log archived.
+Section 37. Routine maintenance notes for unit 137: pressure nominal, valve seated, log archived.
+Section 38. Routine maintenance notes for unit 138: pressure nominal, valve seated, log archived.
+Section 39. Routine maintenance notes for unit 139: pressure nominal, valve seated, log archived.
+Section 40. Routine maintenance notes for unit 140: pressure nominal, valve seated, log archived.
+Section 41. Routine maintenance notes for unit 141: pressure nominal, valve seated, log archived.
+Section 42. Routine maintenance notes for unit 142: pressure nominal, valve seated, log archived.
+Section 43. Routine maintenance notes for unit 143: pressure nominal, valve seated, log archived.
+Section 44. Routine maintenance notes for unit 144: pressure nominal, valve seated, log archived.
+Section 45. Routine maintenance notes for unit 145: pressure nominal, valve seated, log archived.
+Section 46. Routine maintenance notes for unit 146: pressure nominal, valve seated, log archived.
+Section 47. Routine maintenance notes for unit 147: pressure nominal, valve seated, log archived.
+Section 48. Routine maintenance notes for unit 148: pressure nominal, valve seated, log archived.
+Section 49. Routine maintenance notes for unit 149: pressure nominal, valve seated, log archived.
+Section 50. Routine maintenance notes for unit 150: pressure nominal, valve seated, log archived.
+Section 51. Routine maintenance notes for unit 151: pressure nominal, valve seated, log archived.
+Section 52. Routine maintenance notes for unit 152: pressure nominal, valve seated, log archived.
+Section 53. Routine maintenance notes for unit 153: pressure nominal, valve seated, log archived.
+Section 54. Routine maintenance notes for unit 154: pressure nominal, valve seated, log archived.
+Section 55. Routine maintenance notes for unit 155: pressure nominal, valve seated, log archived.
+Section 56. Routine maintenance notes for unit 156: pressure nominal, valve seated, log archived.
+Section 57. Routine maintenance notes for unit 157: pressure nominal, valve seated, log archived.
+Section 58. Routine maintenance notes for unit 158: pressure nominal, valve seated, log archived.
+Section 59. Routine maintenance notes for unit 159: pressure nominal, valve seated, log archived.
+Section 60. Routine maintenance notes for unit 160: pressure nominal, valve seated, log archived.
+Section 61. Routine maintenance notes for unit 161: pressure nominal, valve seated, log archived.
+Section 62. Routine maintenance notes for unit 162: pressure nominal, valve seated, log archived.
+Section 63. Routine maintenance notes for unit 163: pressure nominal, valve seated, log archived.
+Section 64. Routine maintenance notes for unit 164: pressure nominal, valve seated, log archived.
+Section 65. Routine maintenance notes for unit 165: pressure nominal, valve seated, log archived.
+Section 66. Routine maintenance notes for unit 166: pressure nominal, valve seated, log archived.
+Section 67. Routine maintenance notes for unit 167: pressure nominal, valve seated, log archived.
+Section 68. Routine maintenance notes for unit 168: pressure nominal, valve seated, log archived.
+Section 69. Routine maintenance notes for unit 169: pressure nominal, valve seated, log archived.
+Section 70. Routine maintenance notes for unit 170: pressure nominal, valve seated, log archived.
+Section 71. Routine maintenance notes for unit 171: pressure nominal, valve seated, log archived.
+Section 72. Routine maintenance notes for unit 172: pressure nominal, valve seated, log archived.
+Section 73. Routine maintenance notes for unit 173: pressure nominal, valve seated, log archived.
+Section 74. Routine maintenance notes for unit 174: pressure nominal, valve seated, log archived.
+Section 75. Routine maintenance notes for unit 175: pressure nominal, valve seated, log archived.
+Section 76. Routine maintenance notes for unit 176: pressure nominal, valve seated, log archived.
+Section 77. Routine maintenance notes for unit 177: pressure nominal, valve seated, log archived.
+Section 78. Routine maintenance notes for unit 178: pressure nominal, valve seated, log archived.
+Section 79. Routine maintenance notes for unit 179: pressure nominal, valve seated, log archived.
+Section 80. Routine maintenance notes for unit 180: pressure nominal, valve seated, log archived.
+Section 81. Routine maintenance notes for unit 181: pressure nominal, valve seated, log archived.
+Section 82. Routine maintenance notes for unit 182: pressure nominal, valve seated, log archived.
+Section 83. Routine maintenance notes for unit 183: pressure nominal, valve seated, log archived.
+Section 84. Routine maintenance notes for unit 184: pressure nominal, valve seated, log archived.
+Section 85. Routine maintenance notes for unit 185: pressure nominal, valve seated, log archived.
+Section 86. Routine maintenance notes for unit 186: pressure nominal, valve seated, log archived.
+Section 87. Routine maintenance notes for unit 187: pressure nominal, valve seated, log archived.
+Section 88. Routine maintenance notes for unit 188: pressure nominal, valve seated, log archived.
+Section 89. Routine maintenance notes for unit 189: pressure nominal, valve seated, log archived.
+Section 90. Routine maintenance notes for unit 190: pressure nominal, valve seated, log archived.
+Section 91. Routine maintenance notes for unit 191: pressure nominal, valve seated, log archived.
+Section 92. Routine maintenance notes for unit 192: pressure nominal, valve seated, log archived.
+Section 93. Routine maintenance notes for unit 193: pressure nominal, valve seated, log archived.
+Section 94. Routine maintenance notes for unit 194: pressure nominal, valve seated, log archived.
+Section 95. Routine maintenance notes for unit 195: pressure nominal, valve seated, log archived.
+Section 96. Routine maintenance notes for unit 196: pressure nominal, valve seated, log archived.
+Section 97. Routine maintenance notes for unit 197: pressure nominal, valve seated, log archived.
+Section 98. Routine maintenance notes for unit 198: pressure nominal, valve seated, log archived.
+Section 99. Routine maintenance notes for unit 199: pressure nominal, valve seated, log archived.
+Section 100. Routine maintenance notes for unit 200: pressure nominal, valve seated, log archived.
+Section 101. Routine maintenance notes for unit 201: pressure nominal, valve seated, log archived.
+Section 102. Routine maintenance notes for unit 202: pressure nominal, valve seated, log archived.
+Section 103. Routine maintenance notes for unit 203: pressure nominal, valve seated, log archived.
+Section 104. Routine maintenance notes for unit 204: pressure nominal, valve seated, log archived.
+Section 105. Routine maintenance notes for unit 205: pressure nominal, valve seated, log archived.
+Section 106. Routine maintenance notes for unit 206: pressure nominal, valve seated, log archived.
+Section 107. Routine maintenance notes for unit 207: pressure nominal, valve seated, log archived.
+Section 108. Routine maintenance notes for unit 208: pressure nominal, valve seated, log archived.
+Section 109. Routine maintenance notes for unit 209: pressure nominal, valve seated, log archived.
+Section 110. The access code is MAPLE-7731.
+Section 110. Routine maintenance notes for unit 210: pressure nominal, valve seated, log archived.
+Section 111. Routine maintenance notes for unit 211: pressure nominal, valve seated, log archived.
+Section 112. Routine maintenance notes for unit 212: pressure nominal, valve seated, log archived.
+Section 113. Routine maintenance notes for unit 213: pressure nominal, valve seated, log archived.
+Section 114. Routine maintenance notes for unit 214: pressure nominal, valve seated, log archived.
+Section 115. Routine maintenance notes for unit 215: pressure nominal, valve seated, log archived.
+Section 116. Routine maintenance notes for unit 216: pressure nominal, valve seated, log archived.
+Section 117. Routine maintenance notes for unit 217: pressure nominal, valve seated, log archived.
+Section 118. Routine maintenance notes for unit 218: pressure nominal, valve seated, log archived.
+Section 119. Routine maintenance notes for unit 219: pressure nominal, valve seated, log archived.
+Section 120. Routine maintenance notes for unit 220: pressure nominal, valve seated, log archived.
+Section 121. Routine maintenance notes for unit 221: pressure nominal, valve seated, log archived.
+Section 122. Routine maintenance notes for unit 222: pressure nominal, valve seated, log archived.
+Section 123. Routine maintenance notes for unit 223: pressure nominal, valve seated, log archived.
+Section 124. Routine maintenance notes for unit 224: pressure nominal, valve seated, log archived.
+Section 125. Routine maintenance notes for unit 225: pressure nominal, valve seated, log archived.
+Section 126. Routine maintenance notes for unit 226: pressure nominal, valve seated, log archived.
+Section 127. Routine maintenance notes for unit 227: pressure nominal, valve seated, log archived.
+Section 128. Routine maintenance notes for unit 228: pressure nominal, valve seated, log archived.
+Section 129. Routine maintenance notes for unit 229: pressure nominal, valve seated, log archived.
+Section 130. Routine maintenance notes for unit 230: pressure nominal, valve seated, log archived.
+Section 131. Routine maintenance notes for unit 231: pressure nominal, valve seated, log archived.
+Section 132. Routine maintenance notes for unit 232: pressure nominal, valve seated, log archived.
+Section 133. Routine maintenance notes for unit 233: pressure nominal, valve seated, log archived.
+Section 134. Routine maintenance notes for unit 234: pressure nominal, valve seated, log archived.
+Section 135. Routine maintenance notes for unit 235: pressure nominal, valve seated, log archived.
+Section 136. Routine maintenance notes for unit 236: pressure nominal, valve seated, log archived.
+Section 137. Routine maintenance notes for unit 237: pressure nominal, valve seated, log archived.
+Section 138. Routine maintenance notes for unit 238: pressure nominal, valve seated, log archived.
+Section 139. Routine maintenance notes for unit 239: pressure nominal, valve seated, log archived.
+Section 140. Routine maintenance notes for unit 240: pressure nominal, valve seated, log archived.
+Section 141. Routine maintenance notes for unit 241: pressure nominal, valve seated, log archived.
+Section 142. Routine maintenance notes for unit 242: pressure nominal, valve seated, log archived.
+Section 143. Routine maintenance notes for unit 243: pressure nominal, valve seated, log archived.
+Section 144. Routine maintenance notes for unit 244: pressure nominal, valve seated, log archived.
+Section 145. Routine maintenance notes for unit 245: pressure nominal, valve seated, log archived.
+Section 146. Routine maintenance notes for unit 246: pressure nominal, valve seated, log archived.
+Section 147. Routine maintenance notes for unit 247: pressure nominal, valve seated, log archived.
+Section 148. Routine maintenance notes for unit 248: pressure nominal, valve seated, log archived.
+Section 149. Routine maintenance notes for unit 249: pressure nominal, valve seated, log archived.
+Section 150. Routine maintenance notes for unit 250: pressure nominal, valve seated, log archived.
+Section 151. Routine maintenance notes for unit 251: pressure nominal, valve seated, log archived.
+Section 152. Routine maintenance notes for unit 252: pressure nominal, valve seated, log archived.
+Section 153. Routine maintenance notes for unit 253: pressure nominal, valve seated, log archived.
+Section 154. Routine maintenance notes for unit 254: pressure nominal, valve seated, log archived.
+Section 155. Routine maintenance notes for unit 255: pressure nominal, valve seated, log archived.
+Section 156. Routine maintenance notes for unit 256: pressure nominal, valve seated, log archived.
+Section 157. Routine maintenance notes for unit 257: pressure nominal, valve seated, log archived.
+Section 158. Routine maintenance notes for unit 258: pressure nominal, valve seated, log archived.
+Section 159. Routine maintenance notes for unit 259: pressure nominal, valve seated, log archived.
+Section 160. Routine maintenance notes for unit 260: pressure nominal, valve seated, log archived.
+Section 161. Routine maintenance notes for unit 261: pressure nominal, valve seated, log archived.
+Section 162. Routine maintenance notes for unit 262: pressure nominal, valve seated, log archived.
+Section 163. Routine maintenance notes for unit 263: pressure nominal, valve seated, log archived.
+Section 164. Routine maintenance notes for unit 264: pressure nominal, valve seated, log archived.
+Section 165. Routine maintenance notes for unit 265: pressure nominal, valve seated, log archived.
+Section 166. Routine maintenance notes for unit 266: pressure nominal, valve seated, log archived.
+Section 167. Routine maintenance notes for unit 267: pressure nominal, valve seated, log archived.
+Section 168. Routine maintenance notes for unit 268: pressure nominal, valve seated, log archived.
+Section 169. Routine maintenance notes for unit 269: pressure nominal, valve seated, log archived.
+Section 170. Routine maintenance notes for unit 270: pressure nominal, valve seated, log archived.
+Section 171. Routine maintenance notes for unit 271: pressure nominal, valve seated, log archived.
+Section 172. Routine maintenance notes for unit 272: pressure nominal, valve seated, log archived.
+Section 173. Routine maintenance notes for unit 273: pressure nominal, valve seated, log archived.
+Section 174. Routine maintenance notes for unit 274: pressure nominal, valve seated, log archived.
+Section 175. Routine maintenance notes for unit 275: pressure nominal, valve seated, log archived.
+Section 176. Routine maintenance notes for unit 276: pressure nominal, valve seated, log archived.
+Section 177. Routine maintenance notes for unit 277: pressure nominal, valve seated, log archived.
+Section 178. Routine maintenance notes for unit 278: pressure nominal, valve seated, log archived.
+Section 179. Routine maintenance notes for unit 279: pressure nominal, valve seated, log archived.
+Section 180. Routine maintenance notes for unit 280: pressure nominal, valve seated, log archived.
+Section 181. Routine maintenance notes for unit 281: pressure nominal, valve seated, log archived.
+Section 182. Routine maintenance notes for unit 282: pressure nominal, valve seated, log archived.
+Section 183. Routine maintenance notes for unit 283: pressure nominal, valve seated, log archived.
+Section 184. Routine maintenance notes for unit 284: pressure nominal, valve seated, log archived.
+Section 185. Routine maintenance notes for unit 285: pressure nominal, valve seated, log archived.
+Section 186. Routine maintenance notes for unit 286: pressure nominal, valve seated, log archived.
+Section 187. Routine maintenance notes for unit 287: pressure nominal, valve seated, log archived.
+Section 188. Routine maintenance notes for unit 288: pressure nominal, valve seated, log archived.
+Section 189. Routine maintenance notes for unit 289: pressure nominal, valve seated, log archived.
+Section 190. Routine maintenance notes for unit 290: pressure nominal, valve seated, log archived.
+Section 191. Routine maintenance notes for unit 291: pressure nominal, valve seated, log archived.
+Section 192. Routine maintenance notes for unit 292: pressure nominal, valve seated, log archived.
+Section 193. Routine maintenance notes for unit 293: pressure nominal, valve seated, log archived.
+Section 194. Routine maintenance notes for unit 294: pressure nominal, valve seated, log archived.
+Section 195. Routine maintenance notes for unit 295: pressure nominal, valve seated, log archived.
+Section 196. Routine maintenance notes for unit 296: pressure nominal, valve seated, log archived.
+Section 197. Routine maintenance notes for unit 297: pressure nominal, valve seated, log archived.
+Section 198. Routine maintenance notes for unit 298: pressure nominal, valve seated, log archived.
+Section 199. Routine maintenance notes for unit 299: pressure nominal, valve seated, log archived.
+Section 200. Routine maintenance notes for unit 300: pressure nominal, valve seated, log archived.
+Section 201. Routine maintenance notes for unit 301: pressure nominal, valve seated, log archived.
+Section 202. Routine maintenance notes for unit 302: pressure nominal, valve seated, log archived.
+Section 203. Routine maintenance notes for unit 303: pressure nominal, valve seated, log archived.
+Section 204. Routine maintenance notes for unit 304: pressure nominal, valve seated, log archived.
+Section 205. Routine maintenance notes for unit 305: pressure nominal, valve seated, log archived.
+Section 206. Routine maintenance notes for unit 306: pressure nominal, valve seated, log archived.
+Section 207. Routine maintenance notes for unit 307: pressure nominal, valve seated, log archived.
+Section 208. Routine maintenance notes for unit 308: pressure nominal, valve seated, log archived.
+Section 209. Routine maintenance notes for unit 309: pressure nominal, valve seated, log archived.
+Section 210. Routine maintenance notes for unit 310: pressure nominal, valve seated, log archived.
+Section 211. Routine maintenance notes for unit 311: pressure nominal, valve seated, log archived.
+Section 212. Routine maintenance notes for unit 312: pressure nominal, valve seated, log archived.
+Section 213. Routine maintenance notes for unit 313: pressure nominal, valve seated, log archived.
+Section 214. Routine maintenance notes for unit 314: pressure nominal, valve seated, log archived.
+Section 215. Routine maintenance notes for unit 315: pressure nominal, valve seated, log archived.
+Section 216. Routine maintenance notes for unit 316: pressure nominal, valve seated, log archived.
+Section 217. Routine maintenance notes for unit 317: pressure nominal, valve seated, log archived.
+Section 218. Routine maintenance notes for unit 318: pressure nominal, valve seated, log archived.
+Section 219. Routine maintenance notes for unit 319: pressure nominal, valve seated, log archived.
+
+What is the access code?</pre>
+<p>Pass/fail is decided by code, not by reading the answer. The check for this task is in
+<span class="k">bench/tasks.mjs</span>, and failed responses are stored verbatim so the verdict can be re-read.</p>
+</div></main>
+<footer><div class="wrap">We sent every request on this page. Run the script yourself and your numbers will differ — latency always does.</div></footer>
+</body></html>
