@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>gemini-3.5-flash-lite — what it costs on 9 measured tasks</title>
+<meta name="description" content="8 of 9 tasks passed in 8,603ms. Measured, not quoted.">
+<meta property="og:title" content="gemini-3.5-flash-lite — what it costs on 9 measured tasks">
+<meta property="og:description" content="8 of 9 tasks passed in 8,603ms. Measured, not quoted.">
+<meta property="og:type" content="article">
+<style>
+:root{
+  --paper:#ffffff; --ink:#111111; --ink2:#565656; --ink3:#8a8a8a;
+  --rule:#e3e3e3; --rule2:#f0f0f0; --band:#f4f5f6;
+  --bar:#c9cdd2;                 /* 시간 막대 — 색이 아니라 길이가 말한다 */
+  --fail:#b3261e;                /* 이 페이지의 유일한 색. 실패에만 쓴다 */
+  --serif:ui-serif,"Iowan Old Style","Source Serif 4",Georgia,serif;
+  --sans:"Helvetica Neue",-apple-system,BlinkMacSystemFont,Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--sans);font-size:16px;line-height:1.55;
+  -webkit-font-smoothing:antialiased}
+.wrap{max-width:720px;margin:0 auto;padding:0 24px}
+.tablewrap{margin-left:-16px;margin-right:-16px}
+
+header{border-bottom:1px solid var(--ink);}
+header .wrap{display:flex;align-items:baseline;gap:12px;padding:16px 24px}
+header b{font-family:var(--serif);font-size:20px;font-weight:600;letter-spacing:-.01em}
+header span{font-size:14px;color:var(--ink2)}
+header a{color:inherit;text-decoration:none}
+
+main{padding:48px 0 64px}
+.eyebrow{font-size:12px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink3);margin:0 0 12px}
+h1{font-family:var(--serif);font-size:44px;font-weight:600;letter-spacing:-.018em;
+  line-height:1.08;margin:0 0 16px}
+h2{font-family:var(--serif);font-size:24px;font-weight:600;letter-spacing:-.012em;
+  margin:48px 0 12px}
+h3{font-size:16px;font-weight:700;margin:0 0 4px}
+p{margin:0 0 16px}
+.lede{font-size:20px;line-height:1.5;color:var(--ink2);margin-bottom:24px}
+
+/* 측정 조건 — 리포트의 표제부. 읽는 사람이 재현하려면 여기부터 본다 */
+.conditions{border-top:1px solid var(--ink);border-bottom:1px solid var(--rule);
+  padding:12px 0;margin:0 0 32px;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:12px 24px}
+.conditions div{font-size:14px}
+.conditions dt{color:var(--ink3);font-size:12px;letter-spacing:.05em;
+  text-transform:uppercase;margin-bottom:2px}
+.conditions dd{margin:0;font-weight:500}
+
+.tablewrap{overflow-x:auto;margin:0 0 8px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{text-align:left;font-weight:700;font-size:14px;color:var(--ink);
+  background:var(--band);padding:8px 12px;white-space:nowrap}
+th:first-child{padding-left:12px}
+td{padding:8px 12px;border-bottom:1px solid var(--rule2);vertical-align:middle}
+td:first-child{padding-left:12px}
+tr:last-child td{border-bottom:1px solid var(--rule)}
+td.name{font-weight:500;white-space:nowrap}
+td.note{color:var(--ink2);font-size:14px}
+.pass{font-weight:700}
+.fail{color:var(--fail);font-weight:700}
+tr.failrow td.name{color:var(--fail)}
+.dim{color:var(--ink3)}
+
+/* ── 시그니처: 시간 막대 ──────────────────────────────────────────
+   밀리초는 숫자로 읽히지 않는다. 633 과 15,733 의 차이는 길이여야 보인다. */
+td.ms{white-space:nowrap;width:1%;padding-right:4px}
+td.ms b{font-weight:500;font-variant-numeric:tabular-nums}
+td.ms i{font-style:normal;color:var(--ink3);font-size:12px;margin-left:3px}
+/* 막대는 제 칸을 갖는다. 숫자 칸에 겹쳐 두면 옆 열을 덮는다 */
+td.barcell{width:88px;padding-left:0;padding-right:16px}
+td.barcell span{display:block;height:8px;width:var(--w);min-width:2px;
+  background:var(--bar);border-radius:1px}
+td.barcell span.over{position:relative;background:linear-gradient(90deg,var(--bar) 82%,transparent)}
+td.barcell span.over::after{content:"›";position:absolute;right:-4px;top:-6px;
+  color:var(--ink3);font-size:14px;line-height:1}
+th.barhead{padding-left:0}
+td.barcell span.over{background:var(--ink2);
+  clip-path:polygon(0 0,100% 0,calc(100% - 4px) 50%,100% 100%,0 100%)}
+.scalenote{font-size:12px;color:var(--ink3);margin:4px 0 0}
+
+.finding{border-top:1px solid var(--rule);padding:16px 0 4px}
+.finding p{margin:0;color:var(--ink2)}
+.k{font-family:var(--mono);font-size:14px;background:var(--band);
+  padding:1px 4px;border-radius:2px}
+pre{background:var(--band);border-left:2px solid var(--ink);padding:12px 16px;
+  overflow-x:auto;font-family:var(--mono);font-size:14px;line-height:1.5;margin:0 0 16px}
+.caveat{font-size:14px;color:var(--ink2);border-top:1px solid var(--rule);padding-top:12px}
+footer{border-top:1px solid var(--ink);padding:16px 0 64px;font-size:14px;color:var(--ink2)}
+a{color:var(--ink);text-decoration:underline;text-underline-offset:2px;
+  text-decoration-thickness:1px;text-decoration-color:var(--ink3)}
+a:hover{text-decoration-color:var(--ink)}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+@media(max-width:640px){h1{font-size:32px}.lede{font-size:16px}main{padding:32px 0 48px}
+  th,td{padding:8px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head><body>
+<header><div class="wrap"><b><a href="../../">Agent Bench</a></b><span>We give models the same task and publish what it cost them.</span></div></header>
+<main><div class="wrap">
+<p class="eyebrow">Model</p>
+<h1>gemini-3.5-flash-lite</h1>
+<p class="lede">8 of 9 tasks passed, in 8,603&thinsp;ms of wall time, with no thinking tokens reported.</p>
+
+<dl class="conditions">
+<div><dt>Tasks passed</dt><dd>8 of 9</dd></div>
+<div><dt>Total time</dt><dd>8,603 ms</dd></div>
+<div><dt>Thinking tokens</dt><dd>none reported</dd></div>
+<div><dt>One-word probe</dt><dd>764 ms</dd></div>
+
+</dl>
+
+<div class="tablewrap"><table>
+<thead><tr><th>Task</th><th>Result</th><th>Time</th><th class="barhead"></th>
+<th>Thinking tokens</th><th>What came back</th></tr></thead>
+<tbody><tr class=""><td class="name"><a href="../../task/exact-length/">Answer in exactly seven words</a></td><td><span class="pass">pass</span></td><td class="ms"><b>772</b><i>ms</i></td><td class="barcell"><span class="" style="--w:68.3%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">7 words</td></tr>
+<tr class=""><td class="name"><a href="../../task/reverse-order/">Reverse a list exactly</a></td><td><span class="pass">pass</span></td><td class="ms"><b>872</b><i>ms</i></td><td class="barcell"><span class="" style="--w:77.1%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">exact</td></tr>
+<tr class=""><td class="name"><a href="../../task/array-count/">Return an array of exactly five items</a></td><td><span class="pass">pass</span></td><td class="ms"><b>881</b><i>ms</i></td><td class="barcell"><span class="" style="--w:77.9%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">red,blue,green,yellow,purple</td></tr>
+<tr class=""><td class="name"><a href="../../task/multi-constraint/">Hold three format rules at once</a></td><td><span class="pass">pass</span></td><td class="ms"><b>942</b><i>ms</i></td><td class="barcell"><span class="" style="--w:83.3%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">3×4, capitalised</td></tr>
+<tr class=""><td class="name"><a href="../../task/no-preamble/">Output the number and nothing else</a></td><td><span class="pass">pass</span></td><td class="ms"><b>971</b><i>ms</i></td><td class="barcell"><span class="" style="--w:85.9%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">clean</td></tr>
+<tr class=""><td class="name"><a href="../../task/letter-ban/">Write a sentence without the letter E</a></td><td><span class="pass">pass</span></td><td class="ms"><b>985</b><i>ms</i></td><td class="barcell"><span class="" style="--w:87.1%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">6 words, clean</td></tr>
+<tr class="failrow"><td class="name"><a href="../../task/multi-hop-math/">Four-step arithmetic, number only</a></td><td><span class="fail">fail</span></td><td class="ms"><b>990</b><i>ms</i></td><td class="barcell"><span class="" style="--w:87.5%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">got &quot;88.2&quot;</td></tr>
+<tr class=""><td class="name"><a href="../../task/needle/">Find one fact buried in a long document</a></td><td><span class="pass">pass</span></td><td class="ms"><b>1,059</b><i>ms</i></td><td class="barcell"><span class="" style="--w:93.6%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">found</td></tr>
+<tr class=""><td class="name"><a href="../../task/json-schema/">Return valid JSON that matches a schema</a></td><td><span class="pass">pass</span></td><td class="ms"><b>1,131</b><i>ms</i></td><td class="barcell"><span class="" style="--w:100.0%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">population=9776000</td></tr></tbody></table></div>
+
+<h2>Findings</h2>
+<div class="finding"><h3>Where it failed</h3><p><span class="k">Four-step arithmetic, number only</span> — got &quot;88.2&quot;</p></div>
+<div class="finding"><h3>It reports no thinking tokens</h3><p>Every response came back without a <span class="k">thoughtsTokenCount</span> field. That is not the same as a measured zero: the API simply does not report one here, so cost models that read that field see nothing.</p></div>
+
+
+<h2>How this was measured</h2>
+<p>Every task was sent at temperature 0, one request at a time, and judged by code — the checkers live in
+<span class="k">bench/tasks.mjs</span>. Failed responses are stored verbatim so the verdict can be re-read.
+<a href="../../">See all models and tasks</a>.</p>
+</div></main>
+<footer><div class="wrap">We sent every request on this page. Run the script yourself and your numbers will differ — latency always does.</div></footer>
+</body></html>
