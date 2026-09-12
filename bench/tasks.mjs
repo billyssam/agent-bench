@@ -121,4 +121,94 @@ export const TASKS = [
       return { pass: t === "168", note: t === "168" ? "correct" : `got "${t.slice(0, 24)}"` };
     },
   },
+  {
+    id: "nested-json",
+    title: "Fill a nested schema without inventing fields",
+    why: "Shallow JSON is easy. Two levels down is where models add helpful extras that break a strict parser.",
+    prompt: 'Return only JSON shaped exactly like this, no extra keys: {"city":{"name":string,"country":string},"stats":{"population":number,"area_km2":number}}. The city is Lyon, France. No markdown.',
+    check(text) {
+      let o;
+      try { o = JSON.parse(strip(text)); } catch { return { pass: false, note: "not parseable" }; }
+      const top = Object.keys(o || {}).sort().join(",");
+      if (top !== "city,stats") return { pass: false, note: `top keys: ${top || "none"}` };
+      const ck = Object.keys(o.city || {}).sort().join(",");
+      const sk = Object.keys(o.stats || {}).sort().join(",");
+      if (ck !== "country,name") return { pass: false, note: `city keys: ${ck}` };
+      if (sk !== "area_km2,population") return { pass: false, note: `stats keys: ${sk}` };
+      if (typeof o.stats.population !== "number") return { pass: false, note: "population not a number" };
+      return { pass: true, note: `pop=${o.stats.population}` };
+    },
+  },
+  {
+    id: "order-preserved",
+    title: "Map a list without reordering it",
+    why: "The work is trivial; keeping the original order under a transformation is what slips.",
+    prompt: "Uppercase each word and output them comma-separated with no spaces, in the same order as given: delta,alpha,foxtrot,bravo,echo,charlie",
+    check(text) {
+      const want = "DELTA,ALPHA,FOXTROT,BRAVO,ECHO,CHARLIE";
+      const got = strip(text).replace(/\s*,\s*/g, ",").trim();
+      if (got === want) return { pass: true, note: "exact" };
+      const sorted = got.split(",").slice().sort().join(",") === want.split(",").slice().sort().join(",");
+      return { pass: false, note: sorted ? "right words, wrong order" : `got "${got.slice(0, 40)}"` };
+    },
+  },
+  {
+    id: "unknown-answer",
+    title: "Say it does not know",
+    why: "A made-up answer costs more than a refusal. This asks for a fact that does not exist.",
+    prompt: 'What is the name of the cat owned by the 47th president of Mars? If no such thing exists, reply with exactly: UNKNOWN',
+    check(text) {
+      const t = strip(text).toUpperCase();
+      if (t === "UNKNOWN") return { pass: true, note: "declined cleanly" };
+      if (t.includes("UNKNOWN")) return { pass: false, note: "said UNKNOWN but added words" };
+      return { pass: false, note: `invented: "${strip(text).slice(0, 40)}"` };
+    },
+  },
+  {
+    id: "non-english",
+    title: "Answer in Korean when told to",
+    why: "Language is an instruction like any other. Models drift back to English on technical prompts.",
+    prompt: "한국어로만 답하세요. 영어 단어를 쓰지 마세요. 질문: 물은 몇 도에서 끓나요? 숫자와 단위만 쓰고 한 문장으로.",
+    check(text) {
+      const t = strip(text);
+      const hangul = (t.match(/[가-힣]/g) || []).length;
+      const latin = (t.match(/[A-Za-z]/g) || []).length;
+      if (hangul === 0) return { pass: false, note: "no Korean at all" };
+      if (latin > 0) return { pass: false, note: `${latin} Latin letters leaked in` };
+      return { pass: true, note: `${hangul} Hangul chars, no Latin` };
+    },
+  },
+  {
+    id: "unit-chain",
+    title: "Convert through three units",
+    why: "Each conversion is simple; the chain is where a dropped factor hides.",
+    prompt: "Output only the final number, no units and no words: convert 2.5 kilometres to metres, then to centimetres, then divide by 1000.",
+    check(text) {
+      const t = strip(text).replace(/[,\s]/g, "");
+      const num = parseFloat(t);
+      if (!isFinite(num)) return { pass: false, note: `got "${t.slice(0, 24)}"` };
+      return { pass: Math.abs(num - 250) < 0.001, note: num === 250 ? "correct" : `got ${num}` };
+    },
+  },
 ];
+
+// 🔴 목록에 쉼표를 하나 더 찍으면 빈 슬롯이 생기고, 그 칸은 조용히 건너뛰어진다
+//    (두 번 밟았다 — forEach 가 빈 슬롯을 건너뛰어 개수만 하나 늘어 보였다).
+//    불러오는 순간 검사해서, 다음엔 조용히 지나가지 못하게 한다.
+{
+  const problems = [];
+  // 🔴 forEach 는 빈 슬롯을 건너뛴다 — 가드가 같은 함정에 빠지면 아무것도 못 잡는다.
+  //    (돌연변이를 넣어 보니 실제로 그냥 통과했다.) 인덱스로 직접 돈다.
+  for (let i = 0; i < TASKS.length; i++) {
+    const t = TASKS[i];
+    if (!t) problems.push(`${i + 1}번 칸이 비어 있다 (쉼표가 하나 더 찍혔다)`);
+    else if (!t.id || !t.prompt || typeof t.check !== "function") problems.push(`${i + 1}번(${t.id || "이름없음"})이 불완전하다`);
+  }
+  const ids = TASKS.filter(Boolean).map(t => t.id);
+  const dup = ids.filter((x, i) => ids.indexOf(x) !== i);
+  if (dup.length) problems.push(`중복된 id: ${[...new Set(dup)].join(", ")}`);
+  if (problems.length) {
+    console.error("TASKS 정의가 잘못됐다:\n  " + problems.join("\n  "));
+    process.exit(1);
+  }
+}
