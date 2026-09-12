@@ -176,6 +176,7 @@ function matrix(rows, models, tasks) {
     const cells = tasks.map(t => {
       const r = mine.find(x => x.task === t.id);
       if (!r) return `<td class="dim">—</td>`;
+      if (!r.called) return `<td class="dim">n/a</td>`;
       return `<td>${r.pass ? '<span class="pass">pass</span>' : '<span class="fail">fail</span>'}</td>`;
     }).join("");
     return `<tr><td class="name">${esc(m)}</td>${cells}`
@@ -187,14 +188,17 @@ function matrix(rows, models, tasks) {
 
 function taskPage(t, rows) {
   const mine = rows.filter(r => r.task === t.id).sort((a, b) => a.ms - b.ms);
-  const passed = mine.filter(r => r.pass);
-  const failed = mine.filter(r => !r.pass);
+  // 🔴 429·5xx 는 "모델이 못했다" 가 아니라 "못 물어봤다" 이다. 실패로 세면 벤치마크가 거짓말한다.
+  const asked = mine.filter(r => r.called);
+  const unasked = mine.filter(r => !r.called);
+  const passed = asked.filter(r => r.pass);
+  const failed = asked.filter(r => !r.pass);
   const fast = mine[0], slow = mine[mine.length - 1];
   const sc = barScale(mine.map(r => r.ms));
   const tr = mine.map(r => {
-    return `<tr class="${r.pass ? "" : "failrow"}">`
+    return `<tr class="${r.called && !r.pass ? "failrow" : ""}">`
     + `<td class="name">${esc(r.model)}</td>`
-    + `<td>${r.pass ? '<span class="pass">pass</span>' : '<span class="fail">fail</span>'}</td>`
+    + `<td>${!r.called ? '<span class="dim">not asked</span>' : r.pass ? '<span class="pass">pass</span>' : '<span class="fail">fail</span>'}</td>`
     + `<td class="ms"><b>${n(r.ms)}</b><i>ms</i></td>${barCell(r.ms, sc)}`
     + `<td class="note">${r.think_tok == null ? '<span class="dim">not reported</span>' : n(r.think_tok)}</td>`
     + `<td class="note">${esc(r.note)}</td></tr>`;
@@ -206,7 +210,7 @@ function taskPage(t, rows) {
 <p class="lede">${esc(t.why)}</p>
 <dl class="conditions">
 <div><dt>Measured</dt><dd>${esc(tasksData.measured_at.slice(0,10))} UTC</dd></div>
-<div><dt>Result</dt><dd>${passed.length} of ${mine.length} passed</dd></div>
+<div><dt>Result</dt><dd>${passed.length} of ${asked.length} passed${unasked.length ? ` · ${unasked.length} not asked` : ""}</dd></div>
 <div><dt>Temperature</dt><dd>0</dd></div>
 <div><dt>Prompt size</dt><dd>${n(t.prompt_chars)} chars</dd></div>
 </dl>
@@ -216,11 +220,14 @@ function taskPage(t, rows) {
 <tbody>${tr}</tbody></table></div>
 
 <h2>What happened</h2>
+${unasked.length ? `<div class="finding"><h3>${unasked.length} model${unasked.length > 1 ? "s" : ""} could not be asked</h3>
+<p>${unasked.map(u => `<span class="k">${esc(u.model)}</span> returned ${esc(u.note)}`).join("<br>")}.
+That is a spent quota, not a wrong answer — it is left out of the pass rate rather than counted as a failure.</p></div>` : ""}
 ${failed.length
-  ? `<div class="finding"><h3>${failed.length} of ${mine.length} models failed</h3><p>`
+  ? `<div class="finding"><h3>${failed.length} of ${asked.length} models failed</h3><p>`
     + failed.map(f => `<span class="k">${esc(f.model)}</span> — ${esc(f.note)}`).join("<br>")
     + `</p></div>`
-  : `<div class="finding"><h3>Every model passed</h3><p>All ${mine.length} models completed this one. The difference is not capability, it is what each spent to get there.</p></div>`}
+  : `<div class="finding"><h3>Every model passed</h3><p>All ${asked.length} models we could reach completed this one. The difference is not capability, it is what each spent to get there.</p></div>`}
 ${(() => {
   const withT = mine.filter(r => typeof r.think_tok === "number");
   if (withT.length < 2) return "";
@@ -247,7 +254,7 @@ Six models is a small sample, so read this as what happened here, not as a law.<
 `;
   return page({ up: "../../",
                 title: `${t.title} — measured across ${mine.length} Gemini models`,
-                desc: `${passed.length} of ${mine.length} models passed. Latency spread ${(slow.ms/fast.ms).toFixed(1)}×. Measured, with the checker and the raw failures shown.`,
+                desc: `${passed.length} of ${asked.length} models passed. Latency spread ${(slow.ms/fast.ms).toFixed(1)}×. Measured, with the checker and the raw failures shown.`,
                 body });
 }
 
@@ -421,10 +428,11 @@ if (tasksData) {
     fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(path.join(dir, "index.html"), taskPage(t, tasksData.results));
   }
-  const passed = tasksData.results.filter(r => r.pass).length;
+  const asked = tasksData.results.filter(r => r.called);
+  const passed = asked.filter(r => r.pass).length;
   extra = `\n<h2>Can they actually do the work?</h2>
 <p>We gave every model the same ${tasksData.tasks.length} tasks, each with a pass/fail decided by code.
-${passed} of ${tasksData.results.length} runs passed.</p>
+${passed} of ${asked.length} runs passed${tasksData.results.length > asked.length ? `, and ${tasksData.results.length - asked.length} could not be asked (spent quota, not a wrong answer)` : ""}.</p>
 ${matrix(tasksData.results, models, tasksData.tasks)}
 <p style="margin-top:14px">` + tasksData.tasks.map(t =>
   `<a href="task/${t.id}/">${esc(t.title)}</a>`).join(" &middot; ") + `</p>`;
