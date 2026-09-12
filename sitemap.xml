@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://billyssam.github.io/agent-bench/</loc><lastmod>2026-09-12</lastmod></url>
+  <url><loc>https://billyssam.github.io/agent-bench/model/gemini-2.5-flash/</loc><lastmod>2026-09-12</lastmod></url>
   <url><loc>https://billyssam.github.io/agent-bench/model/gemini-3-flash-preview/</loc><lastmod>2026-09-12</lastmod></url>
   <url><loc>https://billyssam.github.io/agent-bench/model/gemini-3.1-flash-lite/</loc><lastmod>2026-09-12</lastmod></url>
   <url><loc>https://billyssam.github.io/agent-bench/model/gemini-3.5-flash-lite/</loc><lastmod>2026-09-12</lastmod></url>
+  <url><loc>https://billyssam.github.io/agent-bench/model/gemini-3.5-flash/</loc><lastmod>2026-09-12</lastmod></url>
   <url><loc>https://billyssam.github.io/agent-bench/task/array-count/</loc><lastmod>2026-09-12</lastmod></url>
   <url><loc>https://billyssam.github.io/agent-bench/task/exact-length/</loc><lastmod>2026-09-12</lastmod></url>
   <url><loc>https://billyssam.github.io/agent-bench/task/json-schema/</loc><lastmod>2026-09-12</lastmod></url>

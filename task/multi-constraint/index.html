@@ -3,9 +3,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Hold three format rules at once — measured across 6 Gemini models</title>
-<meta name="description" content="4 of 4 models passed. Latency spread 21.7×. Measured, with the checker and the raw failures shown.">
+<meta name="description" content="4 of 4 models passed. Latency spread 21.0×. Measured, with the checker and the raw failures shown.">
 <meta property="og:title" content="Hold three format rules at once — measured across 6 Gemini models">
-<meta property="og:description" content="4 of 4 models passed. Latency spread 21.7×. Measured, with the checker and the raw failures shown.">
+<meta property="og:description" content="4 of 4 models passed. Latency spread 21.0×. Measured, with the checker and the raw failures shown.">
 <meta property="og:type" content="article">
 <style>
 :root{
@@ -114,26 +114,26 @@ a:hover{text-decoration-color:var(--ink)}
 
 <div class="tablewrap"><table>
 <thead><tr><th>Model</th><th>Result</th><th>Time</th><th class="barhead"></th><th>Thinking tokens</th><th>What came back</th></tr></thead>
-<tbody><tr class=""><td class="name">gemini-2.5-flash-lite</td><td><span class="dim">not asked</span></td><td class="ms"><b>245</b><i>ms</i></td><td class="barcell"><span class="" style="--w:4.6%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">429 RESOURCE_EXHAUSTED</td></tr>
-<tr class=""><td class="name">gemini-2.5-flash</td><td><span class="dim">not asked</span></td><td class="ms"><b>294</b><i>ms</i></td><td class="barcell"><span class="" style="--w:5.5%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">429 RESOURCE_EXHAUSTED</td></tr>
-<tr class=""><td class="name">gemini-3.1-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>784</b><i>ms</i></td><td class="barcell"><span class="" style="--w:14.8%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">3×4, capitalised</td></tr>
-<tr class=""><td class="name">gemini-3.5-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>942</b><i>ms</i></td><td class="barcell"><span class="" style="--w:17.7%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">3×4, capitalised</td></tr>
-<tr class=""><td class="name">gemini-3.5-flash</td><td><span class="pass">pass</span></td><td class="ms"><b>4,859</b><i>ms</i></td><td class="barcell"><span class="" style="--w:91.5%"></span></td><td class="note">931</td><td class="note">3×4, capitalised</td></tr>
-<tr class=""><td class="name">gemini-3-flash-preview</td><td><span class="pass">pass</span></td><td class="ms"><b>5,312</b><i>ms</i></td><td class="barcell"><span class="" style="--w:100.0%"></span></td><td class="note">1,110</td><td class="note">3×4, capitalised</td></tr></tbody></table></div>
+<tbody><tr class=""><td class="name">gemini-2.5-flash-lite</td><td><span class="dim">not asked</span></td><td class="ms"><b>200</b><i>ms</i></td><td class="barcell"><span class="" style="--w:4.8%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">429 RESOURCE_EXHAUSTED</td></tr>
+<tr class=""><td class="name">gemini-3-flash-preview</td><td><span class="dim">not asked</span></td><td class="ms"><b>213</b><i>ms</i></td><td class="barcell"><span class="" style="--w:5.1%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">429 RESOURCE_EXHAUSTED</td></tr>
+<tr class=""><td class="name">gemini-3.1-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>782</b><i>ms</i></td><td class="barcell"><span class="" style="--w:18.6%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">3×4, capitalised</td></tr>
+<tr class=""><td class="name">gemini-3.5-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>945</b><i>ms</i></td><td class="barcell"><span class="" style="--w:22.5%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">3×4, capitalised</td></tr>
+<tr class=""><td class="name">gemini-2.5-flash</td><td><span class="pass">pass</span></td><td class="ms"><b>2,262</b><i>ms</i></td><td class="barcell"><span class="" style="--w:53.9%"></span></td><td class="note">326</td><td class="note">3×4, capitalised</td></tr>
+<tr class=""><td class="name">gemini-3.5-flash</td><td><span class="pass">pass</span></td><td class="ms"><b>4,199</b><i>ms</i></td><td class="barcell"><span class="" style="--w:100.0%"></span></td><td class="note">931</td><td class="note">3×4, capitalised</td></tr></tbody></table></div>
 
 <h2>What happened</h2>
 <div class="finding"><h3>2 models could not be asked</h3>
-<p><span class="k">gemini-2.5-flash-lite</span> returned 429 RESOURCE_EXHAUSTED<br><span class="k">gemini-2.5-flash</span> returned 429 RESOURCE_EXHAUSTED.
+<p><span class="k">gemini-2.5-flash-lite</span> returned 429 RESOURCE_EXHAUSTED<br><span class="k">gemini-3-flash-preview</span> returned 429 RESOURCE_EXHAUSTED.
 That is a spent quota, not a wrong answer — it is left out of the pass rate rather than counted as a failure.</p></div>
 <div class="finding"><h3>Every model passed</h3><p>All 4 models we could reach completed this one. The difference is not capability, it is what each spent to get there.</p></div>
 <div class="finding"><h3>Thinking more did not mean getting it right</h3>
-<p>On this task <span class="k">gemini-3-flash-preview</span> spent
-<b style="color:var(--fg);font-family:var(--mono)">1,110</b> thinking tokens and passed.
+<p>On this task <span class="k">gemini-3.5-flash</span> spent
+<b style="color:var(--fg);font-family:var(--mono)">931</b> thinking tokens and passed.
 2 models passed without reporting a single thinking token.
 Six models is a small sample, so read this as what happened here, not as a law.</p></div>
-<div class="finding"><h3>21.7× between fastest and slowest</h3>
-<p><span class="k">gemini-2.5-flash-lite</span> finished in 245ms.
-<span class="k">gemini-3-flash-preview</span> took 5,312ms for the same prompt.</p></div>
+<div class="finding"><h3>21.0× between fastest and slowest</h3>
+<p><span class="k">gemini-2.5-flash-lite</span> finished in 200ms.
+<span class="k">gemini-3.5-flash</span> took 4,199ms for the same prompt.</p></div>
 
 <h2>The exact prompt</h2>
 <pre>Write exactly 3 lines about rain. Each line must be exactly 4 words. Each line must start with a capital letter. Output only the 3 lines.</pre>
