@@ -38,6 +38,12 @@ BUILD_RC=$?
 PAGES=$(find dist -name '*.html' 2>/dev/null | wc -l | tr -d ' ')
 say "빌드 끝 (종료 $BUILD_RC · 페이지 $PAGES장)"
 
+# 4) 발행 — gh-pages 브랜치에 올린다. Pages 가 켜져 있으면 그대로 사이트가 갱신된다.
+#    꺼져 있어도 브랜치는 최신으로 유지되므로, 켜는 순간 최신본이 뜬다.
+say "발행 시작"
+bash "$HERE/deploy-pages.sh" >> "$LOG" 2>&1
+say "발행 끝 (종료 $?)"
+
 say "=== 끝 ==="
 # 로그가 무한히 자라지 않게 — 마지막 2000줄만 남긴다
 tail -n 2000 "$LOG" > "$LOG.tmp" && mv "$LOG.tmp" "$LOG"
