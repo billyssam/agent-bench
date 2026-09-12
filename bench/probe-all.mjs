@@ -66,6 +66,21 @@ for (const m of models) {
 const tally = rows.reduce((a, r) => (a[r.verdict] = (a[r.verdict] || 0) + 1, a), {});
 const out = { measured_at: new Date().toISOString(), listed: models.length, tally, rows };
 const f = path.join("data", `all-${new Date().toISOString().slice(0, 10)}.json`);
+// 🔴 전수 조사가 중간에 끊기면 부분 결과가 어제 잰 것을 덮는다. 측정은 되돌릴 수 없다.
+//    (run-tasks 에는 있던 가드가 여기엔 없었다 — 게이트는 쓰는 자리 전부에 걸어야 한다.)
+if (fs.existsSync(f)) {
+  try {
+    const prev = JSON.parse(fs.readFileSync(f, "utf-8"));
+    const prevN = (prev.rows || []).length;
+    const prevOk = (prev.rows || []).filter(r => r.verdict === "answers").length;
+    const nowOk = rows.filter(r => r.verdict === "answers").length;
+    if (rows.length < prevN || nowOk < prevOk) {
+      console.error(`\n덮지 않는다: 이번 ${rows.length}행(응답 ${nowOk}) < 기존 ${prevN}행(응답 ${prevOk}).`);
+      console.error(`중간에 끊겼거나 쿼터가 마른 것으로 보인다. 기존 파일을 그대로 둔다.`);
+      process.exit(1);
+    }
+  } catch { /* 기존 파일이 깨졌으면 새로 쓴다 */ }
+}
 fs.writeFileSync(f, JSON.stringify(out, null, 1) + "\n");
 console.log(`\n→ ${f}`);
 console.log(Object.entries(tally).map(([k, v]) => `${k} ${v}`).join(" · "));

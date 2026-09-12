@@ -1,0 +1,437 @@
+{
+ "measured_at": "2026-09-12T16:29:16.944Z",
+ "listed": 40,
+ "tally": {
+  "answers": 16,
+  "gone": 9,
+  "wrong-shape": 6,
+  "quota": 9
+ },
+ "rows": [
+  {
+   "model": "gemini-2.5-flash",
+   "http": 200,
+   "verdict": "answers",
+   "ms": 1139,
+   "text": "",
+   "rechecked": 2,
+   "reason": "RESOURCE_EXHAUSTED",
+   "msg": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to",
+   "confirmed_solo_404": false,
+   "verified_at": "2026-09-12T19:10:03.944Z",
+   "verified_http": 200
+  },
+  {
+   "model": "gemini-2.5-pro",
+   "http": 404,
+   "verdict": "gone",
+   "ms": 213,
+   "text": "",
+   "rechecked": 0,
+   "reason": "NOT_FOUND",
+   "msg": "This model models/gemini-2.5-pro is no longer available to new users. Please update your code to use models/gemini-3.1-p",
+   "confirmed_solo_404": true
+  },
+  {
+   "model": "gemini-2.5-flash-preview-tts",
+   "http": 400,
+   "verdict": "wrong-shape",
+   "ms": 397,
+   "text": "",
+   "rechecked": 0,
+   "reason": "INVALID_ARGUMENT",
+   "msg": "The requested combination of response modalities (TEXT) is not supported by the model. models/gemini-2.5-flash-preview-t"
+  },
+  {
+   "model": "gemini-2.5-pro-preview-tts",
+   "http": 429,
+   "verdict": "quota",
+   "ms": 270,
+   "text": "",
+   "rechecked": 2,
+   "reason": "RESOURCE_EXHAUSTED",
+   "msg": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to",
+   "confirmed_solo_404": false
+  },
+  {
+   "model": "gemma-4-26b-a4b-it",
+   "http": 200,
+   "verdict": "answers",
+   "ms": 2056,
+   "text": "The user wants a reply consisting of exa",
+   "rechecked": 0,
+   "reason": "",
+   "msg": ""
+  },
+  {
+   "model": "gemma-4-31b-it",
+   "http": 200,
+   "verdict": "answers",
+   "ms": 47279,
+   "text": "The user wants a response consisting of ",
+   "rechecked": 0,
+   "reason": "",
+   "msg": ""
+  },
+  {
+   "model": "gemini-flash-latest",
+   "http": 200,
+   "verdict": "answers",
+   "ms": 5979,
+   "text": "OK",
+   "rechecked": 0,
+   "reason": "",
+   "msg": ""
+  },
+  {
+   "model": "gemini-flash-lite-latest",
+   "http": 200,
+   "verdict": "answers",
+   "ms": 799,
+   "text": "OK",
+   "rechecked": 0,
+   "reason": "",
+   "msg": ""
+  },
+  {
+   "model": "gemini-pro-latest",
+   "http": 429,
+   "verdict": "gone",
+   "ms": 310,
+   "text": "",
+   "rechecked": 2,
+   "reason": "RESOURCE_EXHAUSTED",
+   "msg": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to",
+   "confirmed_solo_404": true
+  },
+  {
+   "model": "gemini-2.5-flash-lite",
+   "http": 200,
+   "verdict": "answers",
+   "ms": 953,
+   "text": "OK",
+   "rechecked": 1,
+   "reason": "",
+   "msg": ""
+  },
+  {
+   "model": "gemini-2.5-flash-image",
+   "http": 429,
+   "verdict": "gone",
+   "ms": 293,
+   "text": "",
+   "rechecked": 2,
+   "reason": "RESOURCE_EXHAUSTED",
+   "msg": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to",
+   "confirmed_solo_404": true
+  },
+  {
+   "model": "gemini-3-flash-preview",
+   "http": 200,
+   "verdict": "answers",
+   "ms": 1130,
+   "text": "OK",
+   "rechecked": 0,
+   "reason": "",
+   "msg": ""
+  },
+  {
+   "model": "gemini-3.1-pro-preview",
+   "http": 429,
+   "verdict": "gone",
+   "ms": 273,
+   "text": "",
+   "rechecked": 2,
+   "reason": "RESOURCE_EXHAUSTED",
+   "msg": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to",
+   "confirmed_solo_404": true
+  },
+  {
+   "model": "gemini-3.1-pro-preview-customtools",
+   "http": 429,
+   "verdict": "quota",
+   "ms": 283,
+   "text": "",
+   "rechecked": 2,
+   "reason": "RESOURCE_EXHAUSTED",
+   "msg": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to",
+   "confirmed_solo_404": false
+  },
+  {
+   "model": "gemini-3.1-flash-lite-preview",
+   "http": 200,
+   "verdict": "answers",
+   "ms": 1377,
+   "text": "OK",
+   "rechecked": 0,
+   "reason": "",
+   "msg": ""
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "http": 200,
+   "verdict": "answers",
+   "ms": 577,
+   "text": "OK",
+   "rechecked": 0,
+   "reason": "",
+   "msg": ""
+  },
+  {
+   "model": "gemini-3-pro-image-preview",
+   "http": 429,
+   "verdict": "quota",
+   "ms": 234,
+   "text": "",
+   "rechecked": 2,
+   "reason": "RESOURCE_EXHAUSTED",
+   "msg": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to",
+   "confirmed_solo_404": false
+  },
+  {
+   "model": "gemini-3-pro-image",
+   "http": 429,
+   "verdict": "gone",
+   "ms": 251,
+   "text": "",
+   "rechecked": 2,
+   "reason": "RESOURCE_EXHAUSTED",
+   "msg": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to",
+   "confirmed_solo_404": true
+  },
+  {
+   "model": "nano-banana-pro-preview",
+   "http": 429,
+   "verdict": "gone",
+   "ms": 214,
+   "text": "",
+   "rechecked": 2,
+   "reason": "RESOURCE_EXHAUSTED",
+   "msg": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to",
+   "confirmed_solo_404": true
+  },
+  {
+   "model": "gemini-3.1-flash-image-preview",
+   "http": 429,
+   "verdict": "quota",
+   "ms": 278,
+   "text": "",
+   "rechecked": 2,
+   "reason": "RESOURCE_EXHAUSTED",
+   "msg": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to",
+   "confirmed_solo_404": false
+  },
+  {
+   "model": "gemini-3.1-flash-image",
+   "http": 429,
+   "verdict": "quota",
+   "ms": 280,
+   "text": "",
+   "rechecked": 2,
+   "reason": "RESOURCE_EXHAUSTED",
+   "msg": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to",
+   "confirmed_solo_404": false
+  },
+  {
+   "model": "gemini-3.1-flash-lite-image",
+   "http": 429,
+   "verdict": "quota",
+   "ms": 229,
+   "text": "",
+   "rechecked": 2,
+   "reason": "RESOURCE_EXHAUSTED",
+   "msg": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to",
+   "confirmed_solo_404": false
+  },
+  {
+   "model": "gemini-3.5-flash",
+   "http": 200,
+   "verdict": "answers",
+   "ms": 1288,
+   "text": "OK",
+   "rechecked": 0,
+   "reason": "",
+   "msg": ""
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "http": 200,
+   "verdict": "answers",
+   "ms": 764,
+   "text": "OK",
+   "rechecked": 0,
+   "reason": "",
+   "msg": ""
+  },
+  {
+   "model": "gemini-omni-flash-preview",
+   "http": 429,
+   "verdict": "gone",
+   "ms": 228,
+   "text": "",
+   "rechecked": 2,
+   "reason": "RESOURCE_EXHAUSTED",
+   "msg": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to",
+   "confirmed_solo_404": true
+  },
+  {
+   "model": "gemini-omni-1.1-flash",
+   "http": 429,
+   "verdict": "quota",
+   "ms": 258,
+   "text": "",
+   "rechecked": 2,
+   "reason": "RESOURCE_EXHAUSTED",
+   "msg": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to",
+   "confirmed_solo_404": false
+  },
+  {
+   "model": "gemini-3.5-transcribe",
+   "http": 200,
+   "verdict": "answers",
+   "ms": 405,
+   "text": "",
+   "rechecked": 0,
+   "reason": "",
+   "msg": ""
+  },
+  {
+   "model": "gemini-3.6-flash",
+   "http": 200,
+   "verdict": "answers",
+   "ms": 2353,
+   "text": "OK",
+   "rechecked": 0,
+   "reason": "",
+   "msg": ""
+  },
+  {
+   "model": "gemini-3.7-flash",
+   "http": 200,
+   "verdict": "answers",
+   "ms": 1318,
+   "text": "OK",
+   "rechecked": 0,
+   "reason": "",
+   "msg": ""
+  },
+  {
+   "model": "gemini-3.8-flash",
+   "http": 200,
+   "verdict": "answers",
+   "ms": 1162,
+   "text": "OK",
+   "rechecked": 0,
+   "reason": "",
+   "msg": ""
+  },
+  {
+   "model": "lyria-3-clip-preview",
+   "http": 429,
+   "verdict": "quota",
+   "ms": 225,
+   "text": "",
+   "rechecked": 2,
+   "reason": "RESOURCE_EXHAUSTED",
+   "msg": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to",
+   "confirmed_solo_404": false
+  },
+  {
+   "model": "lyria-3-pro-preview",
+   "http": 429,
+   "verdict": "quota",
+   "ms": 255,
+   "text": "",
+   "rechecked": 2,
+   "reason": "RESOURCE_EXHAUSTED",
+   "msg": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to",
+   "confirmed_solo_404": false
+  },
+  {
+   "model": "lyria-3.5",
+   "http": 429,
+   "verdict": "gone",
+   "ms": 227,
+   "text": "",
+   "rechecked": 2,
+   "reason": "RESOURCE_EXHAUSTED",
+   "msg": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to",
+   "confirmed_solo_404": true
+  },
+  {
+   "model": "gemini-3.1-flash-tts-preview",
+   "http": 400,
+   "verdict": "wrong-shape",
+   "ms": 423,
+   "text": "",
+   "rechecked": 0,
+   "reason": "INVALID_ARGUMENT",
+   "msg": "Request contains an invalid argument."
+  },
+  {
+   "model": "gemini-robotics-er-2-preview",
+   "http": 200,
+   "verdict": "answers",
+   "ms": 1271,
+   "text": "OK",
+   "rechecked": 0,
+   "reason": "",
+   "msg": ""
+  },
+  {
+   "model": "gemini-2.5-computer-use-preview-10-2025",
+   "http": 429,
+   "verdict": "gone",
+   "ms": 272,
+   "text": "",
+   "rechecked": 2,
+   "reason": "RESOURCE_EXHAUSTED",
+   "msg": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to",
+   "confirmed_solo_404": true
+  },
+  {
+   "model": "antigravity-preview-05-2026",
+   "http": 400,
+   "verdict": "wrong-shape",
+   "ms": 389,
+   "text": "",
+   "rechecked": 0,
+   "reason": "INVALID_ARGUMENT",
+   "msg": "This model only supports Interactions API."
+  },
+  {
+   "model": "deep-research-max-preview-04-2026",
+   "http": 400,
+   "verdict": "wrong-shape",
+   "ms": 365,
+   "text": "",
+   "rechecked": 0,
+   "reason": "INVALID_ARGUMENT",
+   "msg": "This model only supports Interactions API."
+  },
+  {
+   "model": "deep-research-preview-04-2026",
+   "http": 400,
+   "verdict": "wrong-shape",
+   "ms": 316,
+   "text": "",
+   "rechecked": 0,
+   "reason": "INVALID_ARGUMENT",
+   "msg": "This model only supports Interactions API."
+  },
+  {
+   "model": "deep-research-pro-preview-12-2025",
+   "http": 400,
+   "verdict": "wrong-shape",
+   "ms": 388,
+   "text": "",
+   "rechecked": 0,
+   "reason": "INVALID_ARGUMENT",
+   "msg": "This model only supports Interactions API."
+  }
+ ],
+ "note": "전수 조사가 무료 티어 쿼터를 태운다. 쿼터가 소진되면 서버는 모델 존재를 확인하기 전에 429 를 준다 — 즉 429 는 404 를 가린다. gone 중 confirmed_solo_404=true 인 것만 쿼터 회복 뒤 단독 호출로 확인했다. quota 로 남은 것은 없는 모델인지 한도인지 가리지 못했다.",
+ "verified_last": "2026-09-12T19:17:35.237Z",
+ "key_note": "빌려 쓰던 키(꽁돈AI 파이프라인, Default Gemini Project). 전용 키로 바꾸기 전 기록.",
+ "key_id": "borrowed"
+}

@@ -170,6 +170,70 @@ const tasksData = taskFiles.length ? JSON.parse(fs.readFileSync(path.join(DATA, 
 
 
 
+
+// ── 키가 다르면 결과가 다르다 ────────────────────────────────────
+// 같은 계정, 같은 엔드포인트, 같은 프롬프트. 다른 것은 어느 프로젝트의 키로 물었느냐뿐이다.
+// 🔴 이 페이지는 두 조사 파일이 모두 있을 때만 나온다. 하나뿐이면 만들지 않는다 —
+//    비교가 아닌 것을 비교라고 부르지 않는다.
+function keyComparePage(a, b) {
+  const va = new Map(a.rows.map(r => [r.model, r]));
+  const vb = new Map(b.rows.map(r => [r.model, r]));
+  const common = [...va.keys()].filter(m => vb.has(m));
+  const diff = common.filter(m => va.get(m).verdict !== vb.get(m).verdict);
+  if (!diff.length) return null;
+
+  const label = { answers: "answers", gone: "not found", "wrong-shape": "wrong shape", quota: "quota" };
+  const cell = r => r.verdict === "answers" ? `<span class="pass">answers</span>`
+    : r.verdict === "gone" ? `<span class="fail">404</span>`
+    : `<span class="dim">${esc(label[r.verdict] || r.verdict)}</span>`;
+  const tr = diff.sort().map(m =>
+    `<tr><td class="name">${esc(m)}</td><td>${cell(va.get(m))}</td><td>${cell(vb.get(m))}</td>`
+    + `<td class="note">${esc(va.get(m).http || "")} &rarr; ${esc(vb.get(m).http || "")}</td></tr>`).join("\n");
+
+  const gainedA = diff.filter(m => va.get(m).verdict === "answers").length;
+  const gainedB = diff.filter(m => vb.get(m).verdict === "answers").length;
+
+  const body = `
+<p class="eyebrow">Measurement report</p>
+<h1>The same API, two keys, different answers</h1>
+<p class="lede">We called every model the catalogue lists, twice — once with each of two API keys on the same Google account.
+The catalogue was identical both times. ${diff.length} models did not behave the same way.</p>
+
+<dl class="conditions">
+<div><dt>Models listed</dt><dd>${n(a.rows.length)} (both keys)</dd></div>
+<div><dt>Disagreed</dt><dd>${n(diff.length)}</dd></div>
+<div><dt>Prompt</dt><dd>Same one-word request</dd></div>
+<div><dt>Account</dt><dd>One, two projects</dd></div>
+</dl>
+
+<div class="tablewrap"><table>
+<thead><tr><th>Model</th><th>Key A</th><th>Key B</th><th>HTTP</th></tr></thead>
+<tbody>${tr}</tbody></table></div>
+
+<h2>Findings</h2>
+<div class="finding"><h3>The model list is not the model list</h3>
+<p>Both keys got the same ${n(a.rows.length)} entries from <span class="k">/v1beta/models</span>.
+Asking those entries to actually answer produced two different sets —
+${n(gainedA)} worked only for one key, ${n(gainedB)} only for the other.
+A catalogue that both keys agree on is not a promise that either can use it.</p></div>
+
+<div class="finding"><h3>404 here does not mean retired</h3>
+<p>We first read a 404 as "this model is gone." It is not that simple: several models return
+<span class="k">404 NOT_FOUND</span> to one key and <span class="k">200</span> to another, minutes apart.
+Whether a model exists is answered per project, not per API.</p></div>
+
+<h2>How this was measured</h2>
+<p>One request at a time, same prompt, same endpoint version. Anything that came back
+<span class="k">429</span> was re-asked alone, minutes later, before being recorded — a spent quota
+answers 429 for models that do not exist at all, so a busy sweep will call a missing model "rate limited."
+<a href="../">See the full census</a>.</p>
+`;
+  return page({ up: "../",
+    title: "The same API, two keys, different answers — Gemini model availability",
+    desc: `${diff.length} of ${a.rows.length} listed models behaved differently depending on which key asked. Measured, both directions shown.`,
+    body });
+}
+
 // ── 모델별 페이지 ────────────────────────────────────────────────
 // 축이 하나 더 는다: 작업이 늘면 작업 페이지가, 모델이 늘면 모델 페이지가 따라 는다.
 // 🔴 페이지마다 내용이 실제로 달라야 한다 — 같은 틀에 이름만 바꾸면 걸린다.
@@ -490,6 +554,25 @@ Treat the ms column as one observation, not a benchmark score.</p>
 
 fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(OUT, { recursive: true });
+// 빌린 키로 잰 기록이 남아 있으면 비교 페이지를 만든다
+let keyCmpLink = "";
+{
+  const bf = fs.readdirSync(DATA).filter(f => /^all-.*borrowed-key\.json$/.test(f)).sort();
+  if (bf.length && allData) {
+    const borrowed = JSON.parse(fs.readFileSync(path.join(DATA, bf.at(-1)), "utf-8"));
+    const html = keyComparePage(borrowed, allData);
+    if (html) {
+      const dir = path.join(OUT, "two-keys");
+      fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(path.join(dir, "index.html"), html);
+      keyCmpLink = `<p style="margin-top:14px"><a href="two-keys/">The same API, two keys, different answers</a></p>`;
+      console.log("two-keys 페이지 생성");
+    } else {
+      console.log("two-keys: 두 조사가 완전히 일치 — 페이지를 만들지 않는다");
+    }
+  }
+}
+
 let extra = "";
 if (tasksData) {
   const models = [...new Set(tasksData.results.map(r => r.model))];
