@@ -3,9 +3,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Return valid JSON that matches a schema — measured across 6 Gemini models</title>
-<meta name="description" content="6 of 6 models passed. Latency spread 2.4×. Measured, with the checker and the raw failures shown.">
+<meta name="description" content="6 of 6 models passed. Latency spread 3.1×. Measured, with the checker and the raw failures shown.">
 <meta property="og:title" content="Return valid JSON that matches a schema — measured across 6 Gemini models">
-<meta property="og:description" content="6 of 6 models passed. Latency spread 2.4×. Measured, with the checker and the raw failures shown.">
+<meta property="og:description" content="6 of 6 models passed. Latency spread 3.1×. Measured, with the checker and the raw failures shown.">
 <meta property="og:type" content="article">
 <style>
 :root{
@@ -97,7 +97,7 @@ a:hover{text-decoration-color:var(--ink)}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head><body>
-<header><div class="wrap"><b>Agent Bench</b><span>We give models the same task and publish what it cost them.</span></div></header>
+<header><div class="wrap"><b><a href="../../">Agent Bench</a></b><span>We give models the same task and publish what it cost them.</span></div></header>
 <main><div class="wrap">
 <p class="eyebrow">Task</p>
 <h1>Return valid JSON that matches a schema</h1>
@@ -111,23 +111,23 @@ a:hover{text-decoration-color:var(--ink)}
 
 <div class="tablewrap"><table>
 <thead><tr><th>Model</th><th>Result</th><th>Time</th><th class="barhead"></th><th>Thinking tokens</th><th>What came back</th></tr></thead>
-<tbody><tr class=""><td class="name">gemini-2.5-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>988</b><i>ms</i></td><td class="barcell"><span style="--w:42.2%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">population=9770000</td></tr>
-<tr class=""><td class="name">gemini-3.5-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>1,197</b><i>ms</i></td><td class="barcell"><span style="--w:51.1%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">population=9776000</td></tr>
-<tr class=""><td class="name">gemini-3.1-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>1,323</b><i>ms</i></td><td class="barcell"><span style="--w:56.5%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">population=9776000</td></tr>
-<tr class=""><td class="name">gemini-3-flash-preview</td><td><span class="pass">pass</span></td><td class="ms"><b>2,007</b><i>ms</i></td><td class="barcell"><span style="--w:85.7%"></span></td><td class="note">228</td><td class="note">population=9776000</td></tr>
-<tr class=""><td class="name">gemini-2.5-flash</td><td><span class="pass">pass</span></td><td class="ms"><b>2,317</b><i>ms</i></td><td class="barcell"><span style="--w:99.0%"></span></td><td class="note">252</td><td class="note">population=9700000</td></tr>
-<tr class=""><td class="name">gemini-3.5-flash</td><td><span class="pass">pass</span></td><td class="ms"><b>2,341</b><i>ms</i></td><td class="barcell"><span style="--w:100.0%"></span></td><td class="note">397</td><td class="note">population=9776000</td></tr></tbody></table></div>
+<tbody><tr class=""><td class="name">gemini-2.5-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>794</b><i>ms</i></td><td class="barcell"><span style="--w:32.3%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">population=9770000</td></tr>
+<tr class=""><td class="name">gemini-3.5-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>1,131</b><i>ms</i></td><td class="barcell"><span style="--w:46.1%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">population=9776000</td></tr>
+<tr class=""><td class="name">gemini-3.1-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>1,173</b><i>ms</i></td><td class="barcell"><span style="--w:47.8%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">population=9776000</td></tr>
+<tr class=""><td class="name">gemini-2.5-flash</td><td><span class="pass">pass</span></td><td class="ms"><b>2,026</b><i>ms</i></td><td class="barcell"><span style="--w:82.5%"></span></td><td class="note">252</td><td class="note">population=9700000</td></tr>
+<tr class=""><td class="name">gemini-3-flash-preview</td><td><span class="pass">pass</span></td><td class="ms"><b>2,173</b><i>ms</i></td><td class="barcell"><span style="--w:88.5%"></span></td><td class="note">223</td><td class="note">population=9776000</td></tr>
+<tr class=""><td class="name">gemini-3.5-flash</td><td><span class="pass">pass</span></td><td class="ms"><b>2,455</b><i>ms</i></td><td class="barcell"><span style="--w:100.0%"></span></td><td class="note">398</td><td class="note">population=9776000</td></tr></tbody></table></div>
 
 <h2>What happened</h2>
 <div class="finding"><h3>Every model passed</h3><p>All 6 models completed this one. The difference is not capability, it is what each spent to get there.</p></div>
 <div class="finding"><h3>Thinking more did not mean getting it right</h3>
 <p>On this task <span class="k">gemini-3.5-flash</span> spent
-<b style="color:var(--fg);font-family:var(--mono)">397</b> thinking tokens and passed.
+<b style="color:var(--fg);font-family:var(--mono)">398</b> thinking tokens and passed.
 3 models passed without reporting a single thinking token.
 Six models is a small sample, so read this as what happened here, not as a law.</p></div>
-<div class="finding"><h3>2.4× between fastest and slowest</h3>
-<p><span class="k">gemini-2.5-flash-lite</span> finished in 988ms.
-<span class="k">gemini-3.5-flash</span> took 2,341ms for the same prompt.</p></div>
+<div class="finding"><h3>3.1× between fastest and slowest</h3>
+<p><span class="k">gemini-2.5-flash-lite</span> finished in 794ms.
+<span class="k">gemini-3.5-flash</span> took 2,455ms for the same prompt.</p></div>
 
 <h2>The exact prompt</h2>
 <pre>Return only JSON with exactly these keys: {&quot;city&quot;: string, &quot;population&quot;: number, &quot;country&quot;: string}. The city is Seoul. No markdown, no explanation.</pre>

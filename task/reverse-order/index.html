@@ -3,9 +3,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Reverse a list exactly — measured across 6 Gemini models</title>
-<meta name="description" content="5 of 6 models passed. Latency spread 10.7×. Measured, with the checker and the raw failures shown.">
+<meta name="description" content="3 of 6 models passed. Latency spread 9.4×. Measured, with the checker and the raw failures shown.">
 <meta property="og:title" content="Reverse a list exactly — measured across 6 Gemini models">
-<meta property="og:description" content="5 of 6 models passed. Latency spread 10.7×. Measured, with the checker and the raw failures shown.">
+<meta property="og:description" content="3 of 6 models passed. Latency spread 9.4×. Measured, with the checker and the raw failures shown.">
 <meta property="og:type" content="article">
 <style>
 :root{
@@ -97,37 +97,33 @@ a:hover{text-decoration-color:var(--ink)}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head><body>
-<header><div class="wrap"><b>Agent Bench</b><span>We give models the same task and publish what it cost them.</span></div></header>
+<header><div class="wrap"><b><a href="../../">Agent Bench</a></b><span>We give models the same task and publish what it cost them.</span></div></header>
 <main><div class="wrap">
 <p class="eyebrow">Task</p>
 <h1>Reverse a list exactly</h1>
 <p class="lede">No reasoning needed, only careful transcription. Errors here are attention slips, not knowledge gaps.</p>
 <dl class="conditions">
 <div><dt>Measured</dt><dd>2026-09-12 UTC</dd></div>
-<div><dt>Result</dt><dd>5 of 6 passed</dd></div>
+<div><dt>Result</dt><dd>3 of 6 passed</dd></div>
 <div><dt>Temperature</dt><dd>0</dd></div>
 <div><dt>Prompt size</dt><dd>169 chars</dd></div>
 </dl>
 
 <div class="tablewrap"><table>
 <thead><tr><th>Model</th><th>Result</th><th>Time</th><th class="barhead"></th><th>Thinking tokens</th><th>What came back</th></tr></thead>
-<tbody><tr class="failrow"><td class="name">gemini-2.5-flash</td><td><span class="fail">fail</span></td><td class="ms"><b>273</b><i>ms</i></td><td class="barcell"><span style="--w:9.3%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">429 RESOURCE_EXHAUSTED</td></tr>
-<tr class=""><td class="name">gemini-2.5-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>789</b><i>ms</i></td><td class="barcell"><span style="--w:26.9%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">exact</td></tr>
-<tr class=""><td class="name">gemini-3.1-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>811</b><i>ms</i></td><td class="barcell"><span style="--w:27.7%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">exact</td></tr>
-<tr class=""><td class="name">gemini-3.5-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>1,181</b><i>ms</i></td><td class="barcell"><span style="--w:40.3%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">exact</td></tr>
-<tr class=""><td class="name">gemini-3.5-flash</td><td><span class="pass">pass</span></td><td class="ms"><b>1,884</b><i>ms</i></td><td class="barcell"><span style="--w:64.3%"></span></td><td class="note">294</td><td class="note">exact</td></tr>
-<tr class=""><td class="name">gemini-3-flash-preview</td><td><span class="pass">pass</span></td><td class="ms"><b>2,929</b><i>ms</i></td><td class="barcell"><span style="--w:100.0%"></span></td><td class="note">252</td><td class="note">exact</td></tr></tbody></table></div>
+<tbody><tr class="failrow"><td class="name">gemini-3-flash-preview</td><td><span class="fail">fail</span></td><td class="ms"><b>192</b><i>ms</i></td><td class="barcell"><span style="--w:10.7%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">429 RESOURCE_EXHAUSTED</td></tr>
+<tr class="failrow"><td class="name">gemini-2.5-flash-lite</td><td><span class="fail">fail</span></td><td class="ms"><b>272</b><i>ms</i></td><td class="barcell"><span style="--w:15.1%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">429 RESOURCE_EXHAUSTED</td></tr>
+<tr class="failrow"><td class="name">gemini-3.5-flash</td><td><span class="fail">fail</span></td><td class="ms"><b>443</b><i>ms</i></td><td class="barcell"><span style="--w:24.6%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">429 RESOURCE_EXHAUSTED</td></tr>
+<tr class=""><td class="name">gemini-3.1-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>653</b><i>ms</i></td><td class="barcell"><span style="--w:36.3%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">exact</td></tr>
+<tr class=""><td class="name">gemini-3.5-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>872</b><i>ms</i></td><td class="barcell"><span style="--w:48.4%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">exact</td></tr>
+<tr class=""><td class="name">gemini-2.5-flash</td><td><span class="pass">pass</span></td><td class="ms"><b>1,800</b><i>ms</i></td><td class="barcell"><span style="--w:100.0%"></span></td><td class="note">231</td><td class="note">exact</td></tr></tbody></table></div>
 
 <h2>What happened</h2>
-<div class="finding"><h3>1 of 6 models failed</h3><p><span class="k">gemini-2.5-flash</span> — 429 RESOURCE_EXHAUSTED</p></div>
-<div class="finding"><h3>Thinking more did not mean getting it right</h3>
-<p>On this task <span class="k">gemini-3.5-flash</span> spent
-<b style="color:var(--fg);font-family:var(--mono)">294</b> thinking tokens and passed.
-3 models passed without reporting a single thinking token.
-Six models is a small sample, so read this as what happened here, not as a law.</p></div>
-<div class="finding"><h3>10.7× between fastest and slowest</h3>
-<p><span class="k">gemini-2.5-flash</span> finished in 273ms.
-<span class="k">gemini-3-flash-preview</span> took 2,929ms for the same prompt.</p></div>
+<div class="finding"><h3>3 of 6 models failed</h3><p><span class="k">gemini-3-flash-preview</span> — 429 RESOURCE_EXHAUSTED<br><span class="k">gemini-2.5-flash-lite</span> — 429 RESOURCE_EXHAUSTED<br><span class="k">gemini-3.5-flash</span> — 429 RESOURCE_EXHAUSTED</p></div>
+
+<div class="finding"><h3>9.4× between fastest and slowest</h3>
+<p><span class="k">gemini-3-flash-preview</span> finished in 192ms.
+<span class="k">gemini-2.5-flash</span> took 1,800ms for the same prompt.</p></div>
 
 <h2>The exact prompt</h2>
 <pre>Reverse the order of this list and output only the reversed list, comma-separated, no spaces after commas: alpha,bravo,charlie,delta,echo,foxtrot,golf,hotel,india,juliet</pre>
