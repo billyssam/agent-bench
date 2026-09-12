@@ -80,6 +80,9 @@ td.ms i{font-style:normal;color:var(--ink3);font-size:12px;margin-left:3px}
 td.barcell{width:88px;padding-left:0;padding-right:16px}
 td.barcell span{display:block;height:8px;width:var(--w);min-width:2px;
   background:var(--bar);border-radius:1px}
+td.barcell span.over{position:relative;background:linear-gradient(90deg,var(--bar) 82%,transparent)}
+td.barcell span.over::after{content:"›";position:absolute;right:-4px;top:-6px;
+  color:var(--ink3);font-size:14px;line-height:1}
 th.barhead{padding-left:0}
 td.barcell span.over{background:var(--ink2);
   clip-path:polygon(0 0,100% 0,calc(100% - 4px) 50%,100% 100%,0 100%)}
@@ -102,7 +105,7 @@ a:hover{text-decoration-color:var(--ink)}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 `;
 
-function page({ title, desc, body, slug }) {
+function page({ title, desc, body, slug, up = "" }) {
   return `<!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8">
@@ -114,23 +117,39 @@ function page({ title, desc, body, slug }) {
 <meta property="og:type" content="article">
 <style>${CSS}</style>
 </head><body>
-<header><div class="wrap"><b>${SITE}</b><span>${TAGLINE}</span></div></header>
+<header><div class="wrap"><b><a href="${up || './'}">${SITE}</a></b><span>${TAGLINE}</span></div></header>
 <main><div class="wrap">${body}</div></main>
 <footer><div class="wrap">We sent every request on this page. Run the script yourself and your numbers will differ — latency always does.</div></footer>
 </body></html>`;
 }
 
+
+// 막대 스케일 — 최댓값에 맞추면 이상치 하나가 나머지를 1px 로 만든다.
+// 두 번째로 큰 값에서 끊고, 넘친 막대는 끊겼다고 표시한다(축을 끊었다는 사실을 숨기지 않는다).
+function barScale(values) {
+  const v = values.filter(x => typeof x === "number" && x > 0).sort((a, b) => a - b);
+  if (!v.length) return { cap: 1, max: 1, capped: false };
+  const med = v[Math.floor(v.length / 2)];
+  const normal = v.filter(x => x <= med * 5);          // 중앙값의 5배까지가 "보통"
+  const cap = normal.length ? normal[normal.length - 1] : v[v.length - 1];
+  return { cap, max: v[v.length - 1], capped: v[v.length - 1] > cap };
+}
+function barCell(ms, sc) {
+  if (typeof ms !== "number" || ms <= 0) return `<td class="barcell"></td>`;
+  const w = (Math.min(ms, sc.cap) / sc.cap * 100).toFixed(1);
+  return `<td class="barcell"><span class="${ms > sc.cap ? "over" : ""}" style="--w:${w}%"></span></td>`;
+}
+
 function probeTable(rows) {
-  const max = Math.max(...rows.map(r => r.ms || 0), 1);
+  const sc = barScale(rows.map(r => r.ms));
   const tr = rows.map(r => {
-    const w = ((r.ms || 0) / max * 100).toFixed(1) + "%";
     const status = r.ok ? `<span class="pass">200</span>`
       : `<span class="fail">${r.http || "ERR"}</span> <span class="dim">${esc(r.reason || "")}</span>`;
     const think = !r.ok ? "—" : (r.think_tok == null ? `<span class="dim">not reported</span>` : n(r.think_tok));
     return `<tr class="${r.ok ? "" : "failrow"}">`
       + `<td class="name">${esc(r.model)}</td>`
       + `<td>${status}</td>`
-      + `<td class="ms"><b>${n(r.ms)}</b><i>ms</i></td><td class="barcell"><span style="--w:${w}"></span></td>`
+      + `<td class="ms"><b>${n(r.ms)}</b><i>ms</i></td>${barCell(r.ms, sc)}`
       + `<td class="note">${think}</td></tr>`;
   }).join("\n");
   return `<div class="tablewrap"><table>
@@ -149,7 +168,7 @@ const tasksData = taskFiles.length ? JSON.parse(fs.readFileSync(path.join(DATA, 
 // ── 작업별 페이지 — 측정한 작업 수만큼 페이지가 나온다 ──────────
 function matrix(rows, models, tasks) {
   const totals = models.map(m => rows.filter(r => r.model === m).reduce((a, r) => a + (r.ms || 0), 0));
-  const max = Math.max(...totals, 1);
+  const sc = barScale(totals);
   const head = `<thead><tr><th>Model</th>`
     + tasks.map(t => `<th>${esc(t.id)}</th>`).join("") + `<th>Total time</th><th class="barhead"></th></tr></thead>`;
   const body = models.map((m, i) => {
@@ -159,9 +178,8 @@ function matrix(rows, models, tasks) {
       if (!r) return `<td class="dim">—</td>`;
       return `<td>${r.pass ? '<span class="pass">pass</span>' : '<span class="fail">fail</span>'}</td>`;
     }).join("");
-    const w = (totals[i] / max * 100).toFixed(1) + "%";
     return `<tr><td class="name">${esc(m)}</td>${cells}`
-      + `<td class="ms"><b>${n(totals[i])}</b><i>ms</i></td><td class="barcell"><span style="--w:${w}"></span></td></tr>`;
+      + `<td class="ms"><b>${n(totals[i])}</b><i>ms</i></td>${barCell(totals[i], sc)}</tr>`;
   }).join("\n");
   return `<div class="tablewrap"><table>${head}<tbody>${body}</tbody></table></div>`;
 }
@@ -172,13 +190,12 @@ function taskPage(t, rows) {
   const passed = mine.filter(r => r.pass);
   const failed = mine.filter(r => !r.pass);
   const fast = mine[0], slow = mine[mine.length - 1];
-  const maxMs = Math.max(...mine.map(r => r.ms || 0), 1);
+  const sc = barScale(mine.map(r => r.ms));
   const tr = mine.map(r => {
-    const w = ((r.ms || 0) / maxMs * 100).toFixed(1) + "%";
     return `<tr class="${r.pass ? "" : "failrow"}">`
     + `<td class="name">${esc(r.model)}</td>`
     + `<td>${r.pass ? '<span class="pass">pass</span>' : '<span class="fail">fail</span>'}</td>`
-    + `<td class="ms"><b>${n(r.ms)}</b><i>ms</i></td><td class="barcell"><span style="--w:${w}"></span></td>`
+    + `<td class="ms"><b>${n(r.ms)}</b><i>ms</i></td>${barCell(r.ms, sc)}`
     + `<td class="note">${r.think_tok == null ? '<span class="dim">not reported</span>' : n(r.think_tok)}</td>`
     + `<td class="note">${esc(r.note)}</td></tr>`;
   }).join("\n");
@@ -228,7 +245,8 @@ Six models is a small sample, so read this as what happened here, not as a law.<
 <p>Pass/fail is decided by code, not by reading the answer. The check for this task is in
 <span class="k">bench/tasks.mjs</span>, and failed responses are stored verbatim so the verdict can be re-read.</p>
 `;
-  return page({ title: `${t.title} — measured across ${mine.length} Gemini models`,
+  return page({ up: "../../",
+                title: `${t.title} — measured across ${mine.length} Gemini models`,
                 desc: `${passed.length} of ${mine.length} models passed. Latency spread ${(slow.ms/fast.ms).toFixed(1)}×. Measured, with the checker and the raw failures shown.`,
                 body });
 }
@@ -409,7 +427,7 @@ if (tasksData) {
 ${passed} of ${tasksData.results.length} runs passed.</p>
 ${matrix(tasksData.results, models, tasksData.tasks)}
 <p style="margin-top:14px">` + tasksData.tasks.map(t =>
-  `<a href="/task/${t.id}/">${esc(t.title)}</a>`).join(" &middot; ") + `</p>`;
+  `<a href="task/${t.id}/">${esc(t.title)}</a>`).join(" &middot; ") + `</p>`;
 }
 
 if (allData) {
