@@ -112,6 +112,10 @@ a:hover{text-decoration-color:var(--ink)}
 <div><dt>Prompt size</dt><dd>148 chars</dd></div>
 </dl>
 
+<h2>Why this one</h2>
+<p>Most code that calls a model parses the reply. The moment a model wraps its JSON in a sentence — &quot;Sure, here's the data you asked for&quot; — the parser throws and the request is wasted. Providers now ship structured-output modes for exactly this reason, but plenty of code still sends a plain prompt and hopes. This measures what happens when it does.</p>
+
+<h2>What each model did</h2>
 <div class="tablewrap"><table>
 <thead><tr><th>Model</th><th>Result</th><th>Time</th><th class="barhead"></th><th>Thinking tokens</th><th>What came back</th></tr></thead>
 <tbody><tr class=""><td class="name">gemini-2.5-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>912</b><i>ms</i></td><td class="barcell"><span class="" style="--w:38.2%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">population=9770000</td></tr>
