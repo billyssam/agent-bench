@@ -75,6 +75,9 @@ td.ms i{font-style:normal;color:var(--ink3);font-size:12px;margin-left:3px}
 td.barcell{width:88px;padding-left:0;padding-right:16px}
 td.barcell span{display:block;height:8px;width:var(--w);min-width:2px;
   background:var(--bar);border-radius:1px}
+td.barcell span.over{position:relative;background:linear-gradient(90deg,var(--bar) 82%,transparent)}
+td.barcell span.over::after{content:"›";position:absolute;right:-4px;top:-6px;
+  color:var(--ink3);font-size:14px;line-height:1}
 th.barhead{padding-left:0}
 td.barcell span.over{background:var(--ink2);
   clip-path:polygon(0 0,100% 0,calc(100% - 4px) 50%,100% 100%,0 100%)}
@@ -111,12 +114,12 @@ a:hover{text-decoration-color:var(--ink)}
 
 <div class="tablewrap"><table>
 <thead><tr><th>Model</th><th>Result</th><th>Time</th><th class="barhead"></th><th>Thinking tokens</th><th>What came back</th></tr></thead>
-<tbody><tr class="failrow"><td class="name">gemini-3-flash-preview</td><td><span class="fail">fail</span></td><td class="ms"><b>238</b><i>ms</i></td><td class="barcell"><span style="--w:23.1%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">429 RESOURCE_EXHAUSTED</td></tr>
-<tr class="failrow"><td class="name">gemini-3.5-flash</td><td><span class="fail">fail</span></td><td class="ms"><b>269</b><i>ms</i></td><td class="barcell"><span style="--w:26.1%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">429 RESOURCE_EXHAUSTED</td></tr>
-<tr class="failrow"><td class="name">gemini-2.5-flash</td><td><span class="fail">fail</span></td><td class="ms"><b>407</b><i>ms</i></td><td class="barcell"><span style="--w:39.5%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">429 RESOURCE_EXHAUSTED</td></tr>
-<tr class="failrow"><td class="name">gemini-3.1-flash-lite</td><td><span class="fail">fail</span></td><td class="ms"><b>607</b><i>ms</i></td><td class="barcell"><span style="--w:58.9%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">got &quot;188&quot;</td></tr>
-<tr class="failrow"><td class="name">gemini-3.5-flash-lite</td><td><span class="fail">fail</span></td><td class="ms"><b>990</b><i>ms</i></td><td class="barcell"><span style="--w:96.1%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">got &quot;88.2&quot;</td></tr>
-<tr class="failrow"><td class="name">gemini-2.5-flash-lite</td><td><span class="fail">fail</span></td><td class="ms"><b>1,030</b><i>ms</i></td><td class="barcell"><span style="--w:100.0%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">got &quot;47*13=611611-211=400400/&quot;</td></tr></tbody></table></div>
+<tbody><tr class="failrow"><td class="name">gemini-3-flash-preview</td><td><span class="fail">fail</span></td><td class="ms"><b>238</b><i>ms</i></td><td class="barcell"><span class="" style="--w:23.1%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">429 RESOURCE_EXHAUSTED</td></tr>
+<tr class="failrow"><td class="name">gemini-3.5-flash</td><td><span class="fail">fail</span></td><td class="ms"><b>269</b><i>ms</i></td><td class="barcell"><span class="" style="--w:26.1%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">429 RESOURCE_EXHAUSTED</td></tr>
+<tr class="failrow"><td class="name">gemini-2.5-flash</td><td><span class="fail">fail</span></td><td class="ms"><b>407</b><i>ms</i></td><td class="barcell"><span class="" style="--w:39.5%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">429 RESOURCE_EXHAUSTED</td></tr>
+<tr class="failrow"><td class="name">gemini-3.1-flash-lite</td><td><span class="fail">fail</span></td><td class="ms"><b>607</b><i>ms</i></td><td class="barcell"><span class="" style="--w:58.9%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">got &quot;188&quot;</td></tr>
+<tr class="failrow"><td class="name">gemini-3.5-flash-lite</td><td><span class="fail">fail</span></td><td class="ms"><b>990</b><i>ms</i></td><td class="barcell"><span class="" style="--w:96.1%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">got &quot;88.2&quot;</td></tr>
+<tr class="failrow"><td class="name">gemini-2.5-flash-lite</td><td><span class="fail">fail</span></td><td class="ms"><b>1,030</b><i>ms</i></td><td class="barcell"><span class="" style="--w:100.0%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">got &quot;47*13=611611-211=400400/&quot;</td></tr></tbody></table></div>
 
 <h2>What happened</h2>
 <div class="finding"><h3>6 of 6 models failed</h3><p><span class="k">gemini-3-flash-preview</span> — 429 RESOURCE_EXHAUSTED<br><span class="k">gemini-3.5-flash</span> — 429 RESOURCE_EXHAUSTED<br><span class="k">gemini-2.5-flash</span> — 429 RESOURCE_EXHAUSTED<br><span class="k">gemini-3.1-flash-lite</span> — got &quot;188&quot;<br><span class="k">gemini-3.5-flash-lite</span> — got &quot;88.2&quot;<br><span class="k">gemini-2.5-flash-lite</span> — got &quot;47*13=611611-211=400400/&quot;</p></div>
