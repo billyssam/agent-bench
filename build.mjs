@@ -186,12 +186,14 @@ function modelPage(model, taskRows, allRow, tasksMeta) {
   const sc = barScale(asked.map(r => r.ms));
   const title = tid => (tasksMeta.find(t => t.id === tid) || {}).title || tid;
 
+  // 열이 전부 비어 있으면 그 열은 표에 있을 이유가 없다 — 사실은 요약에 한 줄로 적는다.
+  const showThink = thinking.length > 0;
   const tr = [...asked].sort((a, b) => a.ms - b.ms).map(r =>
     `<tr class="${r.pass ? "" : "failrow"}">`
     + `<td class="name"><a href="../../task/${esc(r.task)}/">${esc(title(r.task))}</a></td>`
     + `<td>${r.pass ? '<span class="pass">pass</span>' : '<span class="fail">fail</span>'}</td>`
     + `<td class="ms"><b>${n(r.ms)}</b><i>ms</i></td>${barCell(r.ms, sc)}`
-    + `<td class="note">${r.think_tok == null ? '<span class="dim">not reported</span>' : n(r.think_tok)}</td>`
+    + (showThink ? `<td class="note">${r.think_tok == null ? '<span class="dim">—</span>' : n(r.think_tok)}</td>` : "")
     + `<td class="note">${esc(r.note)}</td></tr>`).join("\n");
 
   const body = `
@@ -210,7 +212,7 @@ ${unasked.length ? `<div><dt>Not asked</dt><dd>${unasked.length} (quota)</dd></d
 
 <div class="tablewrap"><table>
 <thead><tr><th>Task</th><th>Result</th><th>Time</th><th class="barhead"></th>
-<th>Thinking tokens</th><th>What came back</th></tr></thead>
+${showThink ? "<th>Thinking tokens</th>" : ""}<th>What came back</th></tr></thead>
 <tbody>${tr}</tbody></table></div>
 
 <h2>Findings</h2>
