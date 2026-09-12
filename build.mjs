@@ -169,6 +169,73 @@ const taskFiles = fs.readdirSync(DATA).filter(f => /^tasks-.*\.json$/.test(f)).s
 const tasksData = taskFiles.length ? JSON.parse(fs.readFileSync(path.join(DATA, taskFiles.at(-1)), "utf-8")) : null;
 
 
+
+// ── 모델별 페이지 ────────────────────────────────────────────────
+// 축이 하나 더 는다: 작업이 늘면 작업 페이지가, 모델이 늘면 모델 페이지가 따라 는다.
+// 🔴 페이지마다 내용이 실제로 달라야 한다 — 같은 틀에 이름만 바꾸면 걸린다.
+//    여기서 다른 것은 그 모델이 실제로 낸 숫자와 실패 문구다.
+function modelPage(model, taskRows, allRow, tasksMeta) {
+  const mine = taskRows.filter(r => r.model === model);
+  const asked = mine.filter(r => r.called);
+  const passed = asked.filter(r => r.pass);
+  const failed = asked.filter(r => !r.pass);
+  const unasked = mine.filter(r => !r.called);
+  const total = asked.reduce((a, r) => a + (r.ms || 0), 0);
+  const thinking = asked.filter(r => typeof r.think_tok === "number");
+  const thinkSum = thinking.reduce((a, r) => a + r.think_tok, 0);
+  const sc = barScale(asked.map(r => r.ms));
+  const title = tid => (tasksMeta.find(t => t.id === tid) || {}).title || tid;
+
+  const tr = [...asked].sort((a, b) => a.ms - b.ms).map(r =>
+    `<tr class="${r.pass ? "" : "failrow"}">`
+    + `<td class="name"><a href="../../task/${esc(r.task)}/">${esc(title(r.task))}</a></td>`
+    + `<td>${r.pass ? '<span class="pass">pass</span>' : '<span class="fail">fail</span>'}</td>`
+    + `<td class="ms"><b>${n(r.ms)}</b><i>ms</i></td>${barCell(r.ms, sc)}`
+    + `<td class="note">${r.think_tok == null ? '<span class="dim">not reported</span>' : n(r.think_tok)}</td>`
+    + `<td class="note">${esc(r.note)}</td></tr>`).join("\n");
+
+  const body = `
+<p class="eyebrow">Model</p>
+<h1>${esc(model)}</h1>
+<p class="lede">${passed.length} of ${asked.length} tasks passed, in ${n(total)}&thinsp;ms of wall time${
+  thinkSum ? ` and ${n(thinkSum)} thinking tokens` : ", with no thinking tokens reported"}.</p>
+
+<dl class="conditions">
+<div><dt>Tasks passed</dt><dd>${passed.length} of ${asked.length}</dd></div>
+<div><dt>Total time</dt><dd>${n(total)} ms</dd></div>
+<div><dt>Thinking tokens</dt><dd>${thinkSum ? n(thinkSum) : "none reported"}</dd></div>
+${allRow ? `<div><dt>One-word probe</dt><dd>${n(allRow.ms)} ms</dd></div>` : ""}
+${unasked.length ? `<div><dt>Not asked</dt><dd>${unasked.length} (quota)</dd></div>` : ""}
+</dl>
+
+<div class="tablewrap"><table>
+<thead><tr><th>Task</th><th>Result</th><th>Time</th><th class="barhead"></th>
+<th>Thinking tokens</th><th>What came back</th></tr></thead>
+<tbody>${tr}</tbody></table></div>
+
+<h2>Findings</h2>
+${failed.length
+  ? `<div class="finding"><h3>Where it failed</h3><p>`
+    + failed.map(f => `<span class="k">${esc(title(f.task))}</span> — ${esc(f.note)}`).join("<br>") + `</p></div>`
+  : `<div class="finding"><h3>It passed everything we could ask</h3><p>All ${asked.length} tasks completed. What separates it from the others here is cost, not capability.</p></div>`}
+${thinkSum
+  ? `<div class="finding"><h3>It reports thinking tokens</h3><p>${n(thinkSum)} across ${thinking.length} task${thinking.length > 1 ? "s" : ""}. Those are billed, and they land before the first output token — which is why wall time and output length disagree on this model.</p></div>`
+  : `<div class="finding"><h3>It reports no thinking tokens</h3><p>Every response came back without a <span class="k">thoughtsTokenCount</span> field. That is not the same as a measured zero: the API simply does not report one here, so cost models that read that field see nothing.</p></div>`}
+${unasked.length
+  ? `<div class="finding"><h3>${unasked.length} task${unasked.length > 1 ? "s" : ""} could not be asked</h3><p>The free-tier quota was spent before we got to ${unasked.map(u => `<span class="k">${esc(title(u.task))}</span>`).join(", ")}. Those are left out of the pass rate rather than counted against the model.</p></div>`
+  : ""}
+
+<h2>How this was measured</h2>
+<p>Every task was sent at temperature 0, one request at a time, and judged by code — the checkers live in
+<span class="k">bench/tasks.mjs</span>. Failed responses are stored verbatim so the verdict can be re-read.
+<a href="../../">See all models and tasks</a>.</p>
+`;
+  return page({ up: "../../",
+    title: `${model} — what it costs on ${asked.length} measured tasks`,
+    desc: `${passed.length} of ${asked.length} tasks passed in ${n(total)}ms${thinkSum ? ` and ${n(thinkSum)} thinking tokens` : ""}. Measured, not quoted.`,
+    body });
+}
+
 // ── 작업별 페이지 — 측정한 작업 수만큼 페이지가 나온다 ──────────
 function matrix(rows, models, tasks) {
   const totals = models.map(m => rows.filter(r => r.model === m).reduce((a, r) => a + (r.ms || 0), 0));
@@ -431,11 +498,25 @@ if (tasksData) {
   }
   const asked = tasksData.results.filter(r => r.called);
   const passed = asked.filter(r => r.pass).length;
+  // 🔴 측정이 얇으면 페이지를 만들지 않는다. 2/9 짜리 페이지는 독자에게도 검색엔진에도 쓸모가 없다.
+  //    쿼터가 채워져 측정이 늘면 다음 빌드에서 저절로 생긴다.
+  const MIN_ASKED = 5;
+  const modelPages = models.filter(m =>
+    tasksData.results.filter(r => r.model === m && r.called).length >= MIN_ASKED);
+  for (const m of modelPages) {
+    const dir = path.join(OUT, "model", m);
+    fs.mkdirSync(dir, { recursive: true });
+    const allRow = (allData?.rows || []).find(r => r.model === m && r.verdict === "answers");
+    fs.writeFileSync(path.join(dir, "index.html"),
+      modelPage(m, tasksData.results, allRow, tasksData.tasks));
+  }
   extra = `\n<h2>Can they actually do the work?</h2>
 <p>We gave every model the same ${tasksData.tasks.length} tasks, each with a pass/fail decided by code.
 ${passed} of ${asked.length} runs passed${tasksData.results.length > asked.length ? `, and ${tasksData.results.length - asked.length} could not be asked (spent quota, not a wrong answer)` : ""}.</p>
 ${matrix(tasksData.results, models, tasksData.tasks)}
-<p style="margin-top:14px">` + tasksData.tasks.map(t =>
+${modelPages.length ? `<p style="margin-top:14px"><b>Per model:</b> ` + modelPages.map(m =>
+  `<a href="model/${esc(m)}/">${esc(m)}</a>`).join(" &middot; ") + `</p>` : ""}
+<p style="margin-top:14px"><b>Per task:</b> ` + tasksData.tasks.map(t =>
   `<a href="task/${t.id}/">${esc(t.title)}</a>`).join(" &middot; ") + `</p>`;
 }
 

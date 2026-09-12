@@ -63,6 +63,21 @@ for (const m of models) {
     await new Promise(s => setTimeout(s, 1100));
   }
 }
+// 🔴 쿼터가 마른 날 돌리면 전부 429 가 되고, 그대로 쓰면 **어제 잰 것이 지워진다.**
+//    측정에 성공한 건수가 기존보다 적으면 덮지 않는다. 측정은 되돌릴 수 없다.
+const prevFile = path.join("data", `tasks-${new Date().toISOString().slice(0, 10)}.json`);
+if (fs.existsSync(prevFile)) {
+  try {
+    const prev = JSON.parse(fs.readFileSync(prevFile, "utf-8"));
+    const prevOk = (prev.results || []).filter(r => r.called).length;
+    const nowOk = results.filter(r => r.called).length;
+    if (nowOk < prevOk) {
+      console.error(`\n덮지 않는다: 이번에 측정된 건 ${nowOk}건, 기존은 ${prevOk}건. 쿼터가 마른 것으로 보인다.`);
+      process.exit(1);
+    }
+  } catch { /* 기존 파일이 깨졌으면 새로 쓴다 */ }
+}
+
 const out = { measured_at: new Date().toISOString(), timeout_ms: TIMEOUT_MS,
               tasks: TASKS.map(t => ({ id: t.id, title: t.title, why: t.why, prompt_chars: t.prompt.length })),
               results };
