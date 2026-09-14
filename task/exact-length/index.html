@@ -3,9 +3,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Answer in exactly seven words — measured across 6 Gemini models</title>
-<meta name="description" content="4 of 4 models passed. Latency spread 52.2×. Measured, with the checker and the raw failures shown.">
+<meta name="description" content="3 of 3 models passed. Latency spread 105.5×. Measured, with the checker and the raw failures shown.">
 <meta property="og:title" content="Answer in exactly seven words — measured across 6 Gemini models">
-<meta property="og:description" content="4 of 4 models passed. Latency spread 52.2×. Measured, with the checker and the raw failures shown.">
+<meta property="og:description" content="3 of 3 models passed. Latency spread 105.5×. Measured, with the checker and the raw failures shown.">
 <meta property="og:type" content="article">
 <style>
 :root{
@@ -106,8 +106,8 @@ a:hover{text-decoration-color:var(--ink)}
 <h1>Answer in exactly seven words</h1>
 <p class="lede">A hard format constraint the model must count against, not approximate.</p>
 <dl class="conditions">
-<div><dt>Measured</dt><dd>2026-09-13 UTC</dd></div>
-<div><dt>Result</dt><dd>4 of 4 passed · 2 not asked</dd></div>
+<div><dt>Measured</dt><dd>2026-09-14 UTC</dd></div>
+<div><dt>Result</dt><dd>3 of 3 passed · 3 not asked</dd></div>
 <div><dt>Temperature</dt><dd>0</dd></div>
 <div><dt>Prompt size</dt><dd>82 chars</dd></div>
 </dl>
@@ -118,26 +118,22 @@ a:hover{text-decoration-color:var(--ink)}
 <h2>What each model did</h2>
 <div class="tablewrap"><table>
 <thead><tr><th>Model</th><th>Result</th><th>Time</th><th class="barhead"></th><th>Thinking tokens</th><th>What came back</th></tr></thead>
-<tbody><tr class=""><td class="name">gemini-2.5-flash-lite</td><td><span class="dim">not asked</span></td><td class="ms"><b>220</b><i>ms</i></td><td class="barcell"><span class="" style="--w:1.9%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">404 NOT_FOUND</td></tr>
-<tr class=""><td class="name">gemini-2.5-flash</td><td><span class="dim">not asked</span></td><td class="ms"><b>343</b><i>ms</i></td><td class="barcell"><span class="" style="--w:3.0%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">404 NOT_FOUND</td></tr>
-<tr class=""><td class="name">gemini-3.1-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>743</b><i>ms</i></td><td class="barcell"><span class="" style="--w:6.5%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">7 words</td></tr>
-<tr class=""><td class="name">gemini-3-flash-preview</td><td><span class="pass">pass</span></td><td class="ms"><b>5,772</b><i>ms</i></td><td class="barcell"><span class="" style="--w:50.3%"></span></td><td class="note">1,035</td><td class="note">7 words</td></tr>
-<tr class=""><td class="name">gemini-3.5-flash</td><td><span class="pass">pass</span></td><td class="ms"><b>7,910</b><i>ms</i></td><td class="barcell"><span class="" style="--w:68.9%"></span></td><td class="note">555</td><td class="note">7 words</td></tr>
-<tr class=""><td class="name">gemini-3.5-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>11,478</b><i>ms</i></td><td class="barcell"><span class="" style="--w:100.0%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">7 words</td></tr></tbody></table></div>
+<tbody><tr class=""><td class="name">gemini-2.5-flash</td><td><span class="dim">not asked</span></td><td class="ms"><b>205</b><i>ms</i></td><td class="barcell"><span class="" style="--w:3.5%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">404 NOT_FOUND</td></tr>
+<tr class=""><td class="name">gemini-2.5-flash-lite</td><td><span class="dim">not asked</span></td><td class="ms"><b>207</b><i>ms</i></td><td class="barcell"><span class="" style="--w:3.5%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">404 NOT_FOUND</td></tr>
+<tr class=""><td class="name">gemini-3.5-flash</td><td><span class="dim">not asked</span></td><td class="ms"><b>648</b><i>ms</i></td><td class="barcell"><span class="" style="--w:11.0%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">503 UNAVAILABLE</td></tr>
+<tr class=""><td class="name">gemini-3.5-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>775</b><i>ms</i></td><td class="barcell"><span class="" style="--w:13.1%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">7 words</td></tr>
+<tr class=""><td class="name">gemini-3-flash-preview</td><td><span class="pass">pass</span></td><td class="ms"><b>5,913</b><i>ms</i></td><td class="barcell"><span class="" style="--w:100.0%"></span></td><td class="note">1,035</td><td class="note">7 words</td></tr>
+<tr class=""><td class="name">gemini-3.1-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>21,630</b><i>ms</i></td><td class="barcell"><span class="over" style="--w:100.0%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">7 words</td></tr></tbody></table></div>
 
 <h2>What happened</h2>
-<div class="finding"><h3>2 models could not be asked</h3>
-<p><span class="k">gemini-2.5-flash-lite</span> returned 404 NOT_FOUND<br><span class="k">gemini-2.5-flash</span> returned 404 NOT_FOUND.
+<div class="finding"><h3>3 models could not be asked</h3>
+<p><span class="k">gemini-2.5-flash</span> returned 404 NOT_FOUND<br><span class="k">gemini-2.5-flash-lite</span> returned 404 NOT_FOUND<br><span class="k">gemini-3.5-flash</span> returned 503 UNAVAILABLE.
 That is a spent quota, not a wrong answer — it is left out of the pass rate rather than counted as a failure.</p></div>
-<div class="finding"><h3>Every model passed</h3><p>All 4 models we could reach completed this one. The difference is not capability, it is what each spent to get there.</p></div>
-<div class="finding"><h3>Thinking more did not mean getting it right</h3>
-<p>On this task <span class="k">gemini-3-flash-preview</span> spent
-<b style="color:var(--fg);font-family:var(--mono)">1,035</b> thinking tokens and passed.
-2 models passed without reporting a single thinking token.
-Six models is a small sample, so read this as what happened here, not as a law.</p></div>
-<div class="finding"><h3>52.2× between fastest and slowest</h3>
-<p><span class="k">gemini-2.5-flash-lite</span> finished in 220ms.
-<span class="k">gemini-3.5-flash-lite</span> took 11,478ms for the same prompt.</p></div>
+<div class="finding"><h3>Every model passed</h3><p>All 3 models we could reach completed this one. The difference is not capability, it is what each spent to get there.</p></div>
+
+<div class="finding"><h3>105.5× between fastest and slowest</h3>
+<p><span class="k">gemini-2.5-flash</span> finished in 205ms.
+<span class="k">gemini-3.1-flash-lite</span> took 21,630ms for the same prompt.</p></div>
 
 <h2>The exact prompt</h2>
 <pre>Answer in exactly 7 words, no more and no fewer. Question: what is photosynthesis?</pre>
