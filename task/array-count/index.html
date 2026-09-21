@@ -3,9 +3,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Return an array of exactly five items — measured across 6 Gemini models</title>
-<meta name="description" content="4 of 4 models passed. Latency spread 21.8×. Measured, with the checker and the raw failures shown.">
+<meta name="description" content="4 of 4 models passed. Latency spread 166.9×. Measured, with the checker and the raw failures shown.">
 <meta property="og:title" content="Return an array of exactly five items — measured across 6 Gemini models">
-<meta property="og:description" content="4 of 4 models passed. Latency spread 21.8×. Measured, with the checker and the raw failures shown.">
+<meta property="og:description" content="4 of 4 models passed. Latency spread 166.9×. Measured, with the checker and the raw failures shown.">
 <meta property="og:type" content="article">
 <style>
 :root{
@@ -106,7 +106,7 @@ a:hover{text-decoration-color:var(--ink)}
 <h1>Return an array of exactly five items</h1>
 <p class="lede">Counting its own output while producing structured data — the two failure modes combined.</p>
 <dl class="conditions">
-<div><dt>Measured</dt><dd>2026-09-20 UTC</dd></div>
+<div><dt>Measured</dt><dd>2026-09-21 UTC</dd></div>
 <div><dt>Result</dt><dd>4 of 4 passed · 2 not asked</dd></div>
 <div><dt>Temperature</dt><dd>0</dd></div>
 <div><dt>Prompt size</dt><dd>110 chars</dd></div>
@@ -118,12 +118,12 @@ a:hover{text-decoration-color:var(--ink)}
 <h2>What each model did</h2>
 <div class="tablewrap"><table>
 <thead><tr><th>Model</th><th>Result</th><th>Time</th><th class="barhead"></th><th>Thinking tokens</th><th>What came back</th></tr></thead>
-<tbody><tr class=""><td class="name">gemini-2.5-flash</td><td><span class="dim">not asked</span></td><td class="ms"><b>221</b><i>ms</i></td><td class="barcell"><span class="" style="--w:4.6%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">404 NOT_FOUND</td></tr>
-<tr class=""><td class="name">gemini-2.5-flash-lite</td><td><span class="dim">not asked</span></td><td class="ms"><b>276</b><i>ms</i></td><td class="barcell"><span class="" style="--w:5.7%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">404 NOT_FOUND</td></tr>
-<tr class=""><td class="name">gemini-3.5-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>1,006</b><i>ms</i></td><td class="barcell"><span class="" style="--w:20.9%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">red,blue,green,yellow,purple</td></tr>
-<tr class=""><td class="name">gemini-3-flash-preview</td><td><span class="pass">pass</span></td><td class="ms"><b>2,060</b><i>ms</i></td><td class="barcell"><span class="" style="--w:42.8%"></span></td><td class="note">147</td><td class="note">Red,Blue,Green,Yellow,Purple</td></tr>
-<tr class=""><td class="name">gemini-3.1-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>2,705</b><i>ms</i></td><td class="barcell"><span class="" style="--w:56.2%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">red,blue,green,yellow,purple</td></tr>
-<tr class=""><td class="name">gemini-3.5-flash</td><td><span class="pass">pass</span></td><td class="ms"><b>4,812</b><i>ms</i></td><td class="barcell"><span class="" style="--w:100.0%"></span></td><td class="note">206</td><td class="note">Red,Blue,Green,Yellow,Purple</td></tr></tbody></table></div>
+<tbody><tr class=""><td class="name">gemini-2.5-flash</td><td><span class="dim">not asked</span></td><td class="ms"><b>261</b><i>ms</i></td><td class="barcell"><span class="" style="--w:5.3%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">404 NOT_FOUND</td></tr>
+<tr class=""><td class="name">gemini-2.5-flash-lite</td><td><span class="dim">not asked</span></td><td class="ms"><b>328</b><i>ms</i></td><td class="barcell"><span class="" style="--w:6.7%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">404 NOT_FOUND</td></tr>
+<tr class=""><td class="name">gemini-3.5-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>704</b><i>ms</i></td><td class="barcell"><span class="" style="--w:14.4%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">Red,Blue,Green,Yellow,Purple</td></tr>
+<tr class=""><td class="name">gemini-3-flash-preview</td><td><span class="pass">pass</span></td><td class="ms"><b>2,191</b><i>ms</i></td><td class="barcell"><span class="" style="--w:44.9%"></span></td><td class="note">143</td><td class="note">Red,Blue,Green,Yellow,Purple</td></tr>
+<tr class=""><td class="name">gemini-3.1-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>4,883</b><i>ms</i></td><td class="barcell"><span class="" style="--w:100.0%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">red,blue,green,yellow,purple</td></tr>
+<tr class=""><td class="name">gemini-3.5-flash</td><td><span class="pass">pass</span></td><td class="ms"><b>43,551</b><i>ms</i></td><td class="barcell"><span class="over" style="--w:100.0%"></span></td><td class="note">206</td><td class="note">Red,Blue,Green,Yellow,Purple</td></tr></tbody></table></div>
 
 <h2>What happened</h2>
 <div class="finding"><h3>2 models could not be asked</h3>
@@ -135,9 +135,9 @@ That is a spent quota, not a wrong answer — it is left out of the pass rate ra
 <b style="color:var(--fg);font-family:var(--mono)">206</b> thinking tokens and passed.
 2 models passed without reporting a single thinking token.
 Six models is a small sample, so read this as what happened here, not as a law.</p></div>
-<div class="finding"><h3>21.8× between fastest and slowest</h3>
-<p><span class="k">gemini-2.5-flash</span> finished in 221ms.
-<span class="k">gemini-3.5-flash</span> took 4,812ms for the same prompt.</p></div>
+<div class="finding"><h3>166.9× between fastest and slowest</h3>
+<p><span class="k">gemini-2.5-flash</span> finished in 261ms.
+<span class="k">gemini-3.5-flash</span> took 43,551ms for the same prompt.</p></div>
 
 <h2>The exact prompt</h2>
 <pre>Return only a JSON array containing exactly 5 strings, each the name of a colour. No markdown, no explanation.</pre>
