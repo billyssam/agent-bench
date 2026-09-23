@@ -2,10 +2,10 @@
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>gemini-3.1-flash-lite — what it costs on 14 measured tasks</title>
-<meta name="description" content="13 of 14 tasks passed in 48,893ms. Measured, not quoted.">
-<meta property="og:title" content="gemini-3.1-flash-lite — what it costs on 14 measured tasks">
-<meta property="og:description" content="13 of 14 tasks passed in 48,893ms. Measured, not quoted.">
+<title>gemini-3.1-flash-lite — what it costs on 13 measured tasks</title>
+<meta name="description" content="12 of 13 tasks passed in 82,611ms. Measured, not quoted.">
+<meta property="og:title" content="gemini-3.1-flash-lite — what it costs on 13 measured tasks">
+<meta property="og:description" content="12 of 13 tasks passed in 82,611ms. Measured, not quoted.">
 <meta property="og:type" content="article">
 <style>
 :root{
@@ -104,38 +104,37 @@ a:hover{text-decoration-color:var(--ink)}
 <main><div class="wrap">
 <p class="eyebrow">Model</p>
 <h1>gemini-3.1-flash-lite</h1>
-<p class="lede">13 of 14 tasks passed, in 48,893&thinsp;ms of wall time, with no thinking tokens reported.</p>
+<p class="lede">12 of 13 tasks passed, in 82,611&thinsp;ms of wall time, with no thinking tokens reported.</p>
 
 <dl class="conditions">
-<div><dt>Tasks passed</dt><dd>13 of 14</dd></div>
-<div><dt>Total time</dt><dd>48,893 ms</dd></div>
+<div><dt>Tasks passed</dt><dd>12 of 13</dd></div>
+<div><dt>Total time</dt><dd>82,611 ms</dd></div>
 <div><dt>Thinking tokens</dt><dd>none reported</dd></div>
 <div><dt>One-word probe</dt><dd>577 ms</dd></div>
-
+<div><dt>Not asked</dt><dd>1 (quota)</dd></div>
 </dl>
 
 <div class="tablewrap"><table>
 <thead><tr><th>Task</th><th>Result</th><th>Time</th><th class="barhead"></th>
 <th>What came back</th></tr></thead>
-<tbody><tr class=""><td class="name"><a href="../../task/nested-json/">Fill a nested schema without inventing fields</a></td><td><span class="pass">pass</span></td><td class="ms"><b>1,092</b><i>ms</i></td><td class="barcell"><span class="" style="--w:20.5%"></span></td><td class="note">pop=522228</td></tr>
-<tr class="failrow"><td class="name"><a href="../../task/multi-hop-math/">Four-step arithmetic, number only</a></td><td><span class="fail">fail</span></td><td class="ms"><b>2,437</b><i>ms</i></td><td class="barcell"><span class="" style="--w:45.6%"></span></td><td class="note">got &quot;188&quot;</td></tr>
-<tr class=""><td class="name"><a href="../../task/letter-ban/">Write a sentence without the letter E</a></td><td><span class="pass">pass</span></td><td class="ms"><b>2,447</b><i>ms</i></td><td class="barcell"><span class="" style="--w:45.8%"></span></td><td class="note">8 words, clean</td></tr>
-<tr class=""><td class="name"><a href="../../task/order-preserved/">Map a list without reordering it</a></td><td><span class="pass">pass</span></td><td class="ms"><b>2,580</b><i>ms</i></td><td class="barcell"><span class="" style="--w:48.3%"></span></td><td class="note">exact</td></tr>
-<tr class=""><td class="name"><a href="../../task/non-english/">Answer in Korean when told to</a></td><td><span class="pass">pass</span></td><td class="ms"><b>3,150</b><i>ms</i></td><td class="barcell"><span class="" style="--w:59.0%"></span></td><td class="note">6 Hangul chars, no Latin</td></tr>
-<tr class=""><td class="name"><a href="../../task/unit-chain/">Convert through three units</a></td><td><span class="pass">pass</span></td><td class="ms"><b>3,350</b><i>ms</i></td><td class="barcell"><span class="" style="--w:62.7%"></span></td><td class="note">correct</td></tr>
-<tr class=""><td class="name"><a href="../../task/array-count/">Return an array of exactly five items</a></td><td><span class="pass">pass</span></td><td class="ms"><b>3,455</b><i>ms</i></td><td class="barcell"><span class="" style="--w:64.7%"></span></td><td class="note">red,blue,green,yellow,purple</td></tr>
-<tr class=""><td class="name"><a href="../../task/multi-constraint/">Hold three format rules at once</a></td><td><span class="pass">pass</span></td><td class="ms"><b>3,690</b><i>ms</i></td><td class="barcell"><span class="" style="--w:69.1%"></span></td><td class="note">3×4, capitalised</td></tr>
-<tr class=""><td class="name"><a href="../../task/no-preamble/">Output the number and nothing else</a></td><td><span class="pass">pass</span></td><td class="ms"><b>3,772</b><i>ms</i></td><td class="barcell"><span class="" style="--w:70.6%"></span></td><td class="note">clean</td></tr>
-<tr class=""><td class="name"><a href="../../task/reverse-order/">Reverse a list exactly</a></td><td><span class="pass">pass</span></td><td class="ms"><b>3,918</b><i>ms</i></td><td class="barcell"><span class="" style="--w:73.4%"></span></td><td class="note">exact</td></tr>
-<tr class=""><td class="name"><a href="../../task/unknown-answer/">Say it does not know</a></td><td><span class="pass">pass</span></td><td class="ms"><b>4,254</b><i>ms</i></td><td class="barcell"><span class="" style="--w:79.7%"></span></td><td class="note">declined cleanly</td></tr>
-<tr class=""><td class="name"><a href="../../task/exact-length/">Answer in exactly seven words</a></td><td><span class="pass">pass</span></td><td class="ms"><b>4,266</b><i>ms</i></td><td class="barcell"><span class="" style="--w:79.9%"></span></td><td class="note">7 words</td></tr>
-<tr class=""><td class="name"><a href="../../task/json-schema/">Return valid JSON that matches a schema</a></td><td><span class="pass">pass</span></td><td class="ms"><b>5,143</b><i>ms</i></td><td class="barcell"><span class="" style="--w:96.3%"></span></td><td class="note">population=9776000</td></tr>
-<tr class=""><td class="name"><a href="../../task/needle/">Find one fact buried in a long document</a></td><td><span class="pass">pass</span></td><td class="ms"><b>5,339</b><i>ms</i></td><td class="barcell"><span class="" style="--w:100.0%"></span></td><td class="note">found</td></tr></tbody></table></div>
+<tbody><tr class=""><td class="name"><a href="../../task/unit-chain/">Convert through three units</a></td><td><span class="pass">pass</span></td><td class="ms"><b>1,633</b><i>ms</i></td><td class="barcell"><span class="" style="--w:16.0%"></span></td><td class="note">correct</td></tr>
+<tr class=""><td class="name"><a href="../../task/json-schema/">Return valid JSON that matches a schema</a></td><td><span class="pass">pass</span></td><td class="ms"><b>3,934</b><i>ms</i></td><td class="barcell"><span class="" style="--w:38.6%"></span></td><td class="note">population=9776000</td></tr>
+<tr class="failrow"><td class="name"><a href="../../task/multi-hop-math/">Four-step arithmetic, number only</a></td><td><span class="fail">fail</span></td><td class="ms"><b>3,936</b><i>ms</i></td><td class="barcell"><span class="" style="--w:38.6%"></span></td><td class="note">got &quot;188&quot;</td></tr>
+<tr class=""><td class="name"><a href="../../task/multi-constraint/">Hold three format rules at once</a></td><td><span class="pass">pass</span></td><td class="ms"><b>4,396</b><i>ms</i></td><td class="barcell"><span class="" style="--w:43.1%"></span></td><td class="note">3×4, capitalised</td></tr>
+<tr class=""><td class="name"><a href="../../task/needle/">Find one fact buried in a long document</a></td><td><span class="pass">pass</span></td><td class="ms"><b>5,237</b><i>ms</i></td><td class="barcell"><span class="" style="--w:51.4%"></span></td><td class="note">found</td></tr>
+<tr class=""><td class="name"><a href="../../task/non-english/">Answer in Korean when told to</a></td><td><span class="pass">pass</span></td><td class="ms"><b>5,400</b><i>ms</i></td><td class="barcell"><span class="" style="--w:53.0%"></span></td><td class="note">6 Hangul chars, no Latin</td></tr>
+<tr class=""><td class="name"><a href="../../task/order-preserved/">Map a list without reordering it</a></td><td><span class="pass">pass</span></td><td class="ms"><b>5,546</b><i>ms</i></td><td class="barcell"><span class="" style="--w:54.4%"></span></td><td class="note">exact</td></tr>
+<tr class=""><td class="name"><a href="../../task/reverse-order/">Reverse a list exactly</a></td><td><span class="pass">pass</span></td><td class="ms"><b>7,192</b><i>ms</i></td><td class="barcell"><span class="" style="--w:70.6%"></span></td><td class="note">exact</td></tr>
+<tr class=""><td class="name"><a href="../../task/unknown-answer/">Say it does not know</a></td><td><span class="pass">pass</span></td><td class="ms"><b>7,194</b><i>ms</i></td><td class="barcell"><span class="" style="--w:70.6%"></span></td><td class="note">declined cleanly</td></tr>
+<tr class=""><td class="name"><a href="../../task/letter-ban/">Write a sentence without the letter E</a></td><td><span class="pass">pass</span></td><td class="ms"><b>8,197</b><i>ms</i></td><td class="barcell"><span class="" style="--w:80.4%"></span></td><td class="note">8 words, clean</td></tr>
+<tr class=""><td class="name"><a href="../../task/no-preamble/">Output the number and nothing else</a></td><td><span class="pass">pass</span></td><td class="ms"><b>9,776</b><i>ms</i></td><td class="barcell"><span class="" style="--w:95.9%"></span></td><td class="note">clean</td></tr>
+<tr class=""><td class="name"><a href="../../task/nested-json/">Fill a nested schema without inventing fields</a></td><td><span class="pass">pass</span></td><td class="ms"><b>9,981</b><i>ms</i></td><td class="barcell"><span class="" style="--w:98.0%"></span></td><td class="note">pop=522228</td></tr>
+<tr class=""><td class="name"><a href="../../task/array-count/">Return an array of exactly five items</a></td><td><span class="pass">pass</span></td><td class="ms"><b>10,189</b><i>ms</i></td><td class="barcell"><span class="" style="--w:100.0%"></span></td><td class="note">red,blue,green,yellow,purple</td></tr></tbody></table></div>
 
 <h2>Findings</h2>
 <div class="finding"><h3>Where it failed</h3><p><span class="k">Four-step arithmetic, number only</span> — got &quot;188&quot;</p></div>
 <div class="finding"><h3>It reports no thinking tokens</h3><p>Every response came back without a <span class="k">thoughtsTokenCount</span> field. That is not the same as a measured zero: the API simply does not report one here, so cost models that read that field see nothing.</p></div>
-
+<div class="finding"><h3>1 task could not be asked</h3><p>The free-tier quota was spent before we got to <span class="k">Answer in exactly seven words</span>. Those are left out of the pass rate rather than counted against the model.</p></div>
 
 <h2>How this was measured</h2>
 <p>Every task was sent at temperature 0, one request at a time, and judged by code — the checkers live in

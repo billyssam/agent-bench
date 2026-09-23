@@ -3,9 +3,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Return valid JSON that matches a schema — measured across 6 Gemini models</title>
-<meta name="description" content="4 of 4 models passed. Latency spread 56.1×. Measured, with the checker and the raw failures shown.">
+<meta name="description" content="3 of 3 models passed. Latency spread 11.7×. Measured, with the checker and the raw failures shown.">
 <meta property="og:title" content="Return valid JSON that matches a schema — measured across 6 Gemini models">
-<meta property="og:description" content="4 of 4 models passed. Latency spread 56.1×. Measured, with the checker and the raw failures shown.">
+<meta property="og:description" content="3 of 3 models passed. Latency spread 11.7×. Measured, with the checker and the raw failures shown.">
 <meta property="og:type" content="article">
 <style>
 :root{
@@ -106,8 +106,8 @@ a:hover{text-decoration-color:var(--ink)}
 <h1>Return valid JSON that matches a schema</h1>
 <p class="lede">Anything that calls a model from code needs parseable output. Prose wrapped around it breaks the caller.</p>
 <dl class="conditions">
-<div><dt>Measured</dt><dd>2026-09-22 UTC</dd></div>
-<div><dt>Result</dt><dd>4 of 4 passed · 2 not asked</dd></div>
+<div><dt>Measured</dt><dd>2026-09-23 UTC</dd></div>
+<div><dt>Result</dt><dd>3 of 3 passed · 3 not asked</dd></div>
 <div><dt>Temperature</dt><dd>0</dd></div>
 <div><dt>Prompt size</dt><dd>148 chars</dd></div>
 </dl>
@@ -118,26 +118,22 @@ a:hover{text-decoration-color:var(--ink)}
 <h2>What each model did</h2>
 <div class="tablewrap"><table>
 <thead><tr><th>Model</th><th>Result</th><th>Time</th><th class="barhead"></th><th>Thinking tokens</th><th>What came back</th></tr></thead>
-<tbody><tr class=""><td class="name">gemini-2.5-flash-lite</td><td><span class="dim">not asked</span></td><td class="ms"><b>276</b><i>ms</i></td><td class="barcell"><span class="" style="--w:5.4%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">404 NOT_FOUND</td></tr>
-<tr class=""><td class="name">gemini-2.5-flash</td><td><span class="dim">not asked</span></td><td class="ms"><b>368</b><i>ms</i></td><td class="barcell"><span class="" style="--w:7.2%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">404 NOT_FOUND</td></tr>
-<tr class=""><td class="name">gemini-3.5-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>756</b><i>ms</i></td><td class="barcell"><span class="" style="--w:14.7%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">population=9776000</td></tr>
-<tr class=""><td class="name">gemini-3-flash-preview</td><td><span class="pass">pass</span></td><td class="ms"><b>1,956</b><i>ms</i></td><td class="barcell"><span class="" style="--w:38.0%"></span></td><td class="note">223</td><td class="note">population=9776000</td></tr>
-<tr class=""><td class="name">gemini-3.1-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>5,143</b><i>ms</i></td><td class="barcell"><span class="" style="--w:100.0%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">population=9776000</td></tr>
-<tr class=""><td class="name">gemini-3.5-flash</td><td><span class="pass">pass</span></td><td class="ms"><b>15,473</b><i>ms</i></td><td class="barcell"><span class="over" style="--w:100.0%"></span></td><td class="note">397</td><td class="note">population=9776000</td></tr></tbody></table></div>
+<tbody><tr class=""><td class="name">gemini-2.5-flash-lite</td><td><span class="dim">not asked</span></td><td class="ms"><b>335</b><i>ms</i></td><td class="barcell"><span class="" style="--w:8.5%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">404 NOT_FOUND</td></tr>
+<tr class=""><td class="name">gemini-2.5-flash</td><td><span class="dim">not asked</span></td><td class="ms"><b>599</b><i>ms</i></td><td class="barcell"><span class="" style="--w:15.2%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">404 NOT_FOUND</td></tr>
+<tr class=""><td class="name">gemini-3.5-flash</td><td><span class="dim">not asked</span></td><td class="ms"><b>665</b><i>ms</i></td><td class="barcell"><span class="" style="--w:16.9%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">503 UNAVAILABLE</td></tr>
+<tr class=""><td class="name">gemini-3.5-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>881</b><i>ms</i></td><td class="barcell"><span class="" style="--w:22.4%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">population=9776000</td></tr>
+<tr class=""><td class="name">gemini-3-flash-preview</td><td><span class="pass">pass</span></td><td class="ms"><b>2,730</b><i>ms</i></td><td class="barcell"><span class="" style="--w:69.4%"></span></td><td class="note">228</td><td class="note">population=9776000</td></tr>
+<tr class=""><td class="name">gemini-3.1-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>3,934</b><i>ms</i></td><td class="barcell"><span class="" style="--w:100.0%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">population=9776000</td></tr></tbody></table></div>
 
 <h2>What happened</h2>
-<div class="finding"><h3>2 models could not be asked</h3>
-<p><span class="k">gemini-2.5-flash-lite</span> returned 404 NOT_FOUND<br><span class="k">gemini-2.5-flash</span> returned 404 NOT_FOUND.
+<div class="finding"><h3>3 models could not be asked</h3>
+<p><span class="k">gemini-2.5-flash-lite</span> returned 404 NOT_FOUND<br><span class="k">gemini-2.5-flash</span> returned 404 NOT_FOUND<br><span class="k">gemini-3.5-flash</span> returned 503 UNAVAILABLE.
 That is a spent quota, not a wrong answer — it is left out of the pass rate rather than counted as a failure.</p></div>
-<div class="finding"><h3>Every model passed</h3><p>All 4 models we could reach completed this one. The difference is not capability, it is what each spent to get there.</p></div>
-<div class="finding"><h3>Thinking more did not mean getting it right</h3>
-<p>On this task <span class="k">gemini-3.5-flash</span> spent
-<b style="color:var(--fg);font-family:var(--mono)">397</b> thinking tokens and passed.
-2 models passed without reporting a single thinking token.
-Six models is a small sample, so read this as what happened here, not as a law.</p></div>
-<div class="finding"><h3>56.1× between fastest and slowest</h3>
-<p><span class="k">gemini-2.5-flash-lite</span> finished in 276ms.
-<span class="k">gemini-3.5-flash</span> took 15,473ms for the same prompt.</p></div>
+<div class="finding"><h3>Every model passed</h3><p>All 3 models we could reach completed this one. The difference is not capability, it is what each spent to get there.</p></div>
+
+<div class="finding"><h3>11.7× between fastest and slowest</h3>
+<p><span class="k">gemini-2.5-flash-lite</span> finished in 335ms.
+<span class="k">gemini-3.1-flash-lite</span> took 3,934ms for the same prompt.</p></div>
 
 <h2>The exact prompt</h2>
 <pre>Return only JSON with exactly these keys: {&quot;city&quot;: string, &quot;population&quot;: number, &quot;country&quot;: string}. The city is Seoul. No markdown, no explanation.</pre>
