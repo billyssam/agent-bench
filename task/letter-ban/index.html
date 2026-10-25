@@ -3,9 +3,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Write a sentence without the letter E — measured across 6 Gemini models</title>
-<meta name="description" content="4 of 4 models passed. Latency spread 81.1×. Measured, with the checker and the raw failures shown.">
+<meta name="description" content="3 of 4 models passed. Latency spread 219.3×. Measured, with the checker and the raw failures shown.">
 <meta property="og:title" content="Write a sentence without the letter E — measured across 6 Gemini models">
-<meta property="og:description" content="4 of 4 models passed. Latency spread 81.1×. Measured, with the checker and the raw failures shown.">
+<meta property="og:description" content="3 of 4 models passed. Latency spread 219.3×. Measured, with the checker and the raw failures shown.">
 <meta property="og:type" content="article">
 <style>
 :root{
@@ -106,8 +106,8 @@ a:hover{text-decoration-color:var(--ink)}
 <h1>Write a sentence without the letter E</h1>
 <p class="lede">A constraint the model must hold across every token it writes. The most common letter in English.</p>
 <dl class="conditions">
-<div><dt>Measured</dt><dd>2026-10-24 UTC</dd></div>
-<div><dt>Result</dt><dd>4 of 4 passed · 2 not asked</dd></div>
+<div><dt>Measured</dt><dd>2026-10-25 UTC</dd></div>
+<div><dt>Result</dt><dd>3 of 4 passed · 2 not asked</dd></div>
 <div><dt>Temperature</dt><dd>0</dd></div>
 <div><dt>Prompt size</dt><dd>112 chars</dd></div>
 </dl>
@@ -118,26 +118,26 @@ a:hover{text-decoration-color:var(--ink)}
 <h2>What each model did</h2>
 <div class="tablewrap"><table>
 <thead><tr><th>Model</th><th>Result</th><th>Time</th><th class="barhead"></th><th>Thinking tokens</th><th>What came back</th></tr></thead>
-<tbody><tr class=""><td class="name">gemini-2.5-flash-lite</td><td><span class="dim">not asked</span></td><td class="ms"><b>205</b><i>ms</i></td><td class="barcell"><span class="" style="--w:1.2%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">404 NOT_FOUND</td></tr>
-<tr class=""><td class="name">gemini-2.5-flash</td><td><span class="dim">not asked</span></td><td class="ms"><b>211</b><i>ms</i></td><td class="barcell"><span class="" style="--w:1.3%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">404 NOT_FOUND</td></tr>
-<tr class=""><td class="name">gemini-3.1-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>849</b><i>ms</i></td><td class="barcell"><span class="" style="--w:5.1%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">5 words, clean</td></tr>
-<tr class=""><td class="name">gemini-3.5-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>4,938</b><i>ms</i></td><td class="barcell"><span class="" style="--w:29.7%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">9 words, clean</td></tr>
-<tr class=""><td class="name">gemini-3-flash-preview</td><td><span class="pass">pass</span></td><td class="ms"><b>13,990</b><i>ms</i></td><td class="barcell"><span class="" style="--w:84.2%"></span></td><td class="note">3,929</td><td class="note">6 words, clean</td></tr>
-<tr class=""><td class="name">gemini-3.5-flash</td><td><span class="pass">pass</span></td><td class="ms"><b>16,625</b><i>ms</i></td><td class="barcell"><span class="" style="--w:100.0%"></span></td><td class="note">3,455</td><td class="note">15 words, clean</td></tr></tbody></table></div>
+<tbody><tr class=""><td class="name">gemini-2.5-flash-lite</td><td><span class="dim">not asked</span></td><td class="ms"><b>212</b><i>ms</i></td><td class="barcell"><span class="" style="--w:0.5%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">404 NOT_FOUND</td></tr>
+<tr class=""><td class="name">gemini-2.5-flash</td><td><span class="dim">not asked</span></td><td class="ms"><b>225</b><i>ms</i></td><td class="barcell"><span class="" style="--w:0.5%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">404 NOT_FOUND</td></tr>
+<tr class="failrow"><td class="name">gemini-3.5-flash-lite</td><td><span class="fail">fail</span></td><td class="ms"><b>6,776</b><i>ms</i></td><td class="barcell"><span class="" style="--w:14.6%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">too short (4 words)</td></tr>
+<tr class=""><td class="name">gemini-3.5-flash</td><td><span class="pass">pass</span></td><td class="ms"><b>28,598</b><i>ms</i></td><td class="barcell"><span class="" style="--w:61.5%"></span></td><td class="note">3,824</td><td class="note">14 words, clean</td></tr>
+<tr class=""><td class="name">gemini-3-flash-preview</td><td><span class="pass">pass</span></td><td class="ms"><b>39,806</b><i>ms</i></td><td class="barcell"><span class="" style="--w:85.6%"></span></td><td class="note">3,930</td><td class="note">6 words, clean</td></tr>
+<tr class=""><td class="name">gemini-3.1-flash-lite</td><td><span class="pass">pass</span></td><td class="ms"><b>46,489</b><i>ms</i></td><td class="barcell"><span class="" style="--w:100.0%"></span></td><td class="note"><span class="dim">not reported</span></td><td class="note">5 words, clean</td></tr></tbody></table></div>
 
 <h2>What happened</h2>
 <div class="finding"><h3>2 models could not be asked</h3>
 <p><span class="k">gemini-2.5-flash-lite</span> returned 404 NOT_FOUND<br><span class="k">gemini-2.5-flash</span> returned 404 NOT_FOUND.
 That is a spent quota, not a wrong answer — it is left out of the pass rate rather than counted as a failure.</p></div>
-<div class="finding"><h3>Every model passed</h3><p>All 4 models we could reach completed this one. The difference is not capability, it is what each spent to get there.</p></div>
+<div class="finding"><h3>1 of 4 models failed</h3><p><span class="k">gemini-3.5-flash-lite</span> — too short (4 words)</p></div>
 <div class="finding"><h3>Thinking more did not mean getting it right</h3>
 <p>On this task <span class="k">gemini-3-flash-preview</span> spent
-<b style="color:var(--fg);font-family:var(--mono)">3,929</b> thinking tokens and passed.
-2 models passed without reporting a single thinking token.
+<b style="color:var(--fg);font-family:var(--mono)">3,930</b> thinking tokens and passed.
+1 model passed without reporting a single thinking token.
 Six models is a small sample, so read this as what happened here, not as a law.</p></div>
-<div class="finding"><h3>81.1× between fastest and slowest</h3>
-<p><span class="k">gemini-2.5-flash-lite</span> finished in 205ms.
-<span class="k">gemini-3.5-flash</span> took 16,625ms for the same prompt.</p></div>
+<div class="finding"><h3>219.3× between fastest and slowest</h3>
+<p><span class="k">gemini-2.5-flash-lite</span> finished in 212ms.
+<span class="k">gemini-3.1-flash-lite</span> took 46,489ms for the same prompt.</p></div>
 
 <h2>The exact prompt</h2>
 <pre>Describe the ocean in one sentence. Do not use the letter 'e' anywhere in your answer. Output only the sentence.</pre>
